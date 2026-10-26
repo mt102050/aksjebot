@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aksjebot</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f1216">
+<style>
+:root{--bg:#0f1216;--card:#171c22;--line:#262d36;--tx:#e8ecf0;--mut:#8b96a3;--acc:#5ad1a0;--warn:#f0b254;--bad:#ef6b6b;--chip:#202833}
+@media (prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#f5f6f8;--card:#fff;--line:#e2e6ea;--tx:#161a1f;--mut:#5d6773;--acc:#0e8a5f;--warn:#a86b00;--bad:#c23b3b;--chip:#eef1f4}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:70px}
+header{padding:14px 16px 6px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+h1{font-size:18px;margin:0}
+.sub{color:var(--mut);font-size:12px}
+main{padding:0 16px;max-width:980px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:12px 2px;font:inherit;font-size:12px;cursor:pointer}
+nav button[aria-selected=true]{color:var(--acc);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.card h2{font-size:14px;margin:0 0 8px;color:var(--mut);font-weight:600;letter-spacing:.02em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.kpi b{display:block;font-size:22px}
+.kpi span{color:var(--mut);font-size:12px}
+.chip{display:inline-block;background:var(--chip);border-radius:20px;padding:2px 9px;font-size:11px;margin:2px 4px 2px 0;color:var(--mut)}
+.chip.w{color:var(--warn)}.chip.g{color:var(--acc)}.chip.b{color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--mut);font-weight:600;text-align:right;padding:6px 4px;border-bottom:1px solid var(--line);font-size:11px;position:sticky;top:0;background:var(--card)}
+td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;vertical-align:top}
+th:first-child,td:first-child{text-align:left}
+tr.row{cursor:pointer}
+.tw{overflow-x:auto}
+.pos{color:var(--acc)}.neg{color:var(--bad)}
+.bar{height:6px;border-radius:3px;background:var(--chip);overflow:hidden;min-width:44px}
+.bar i{display:block;height:100%;background:var(--acc)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+input,select,textarea{background:var(--card);border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:8px 10px;font:inherit}
+textarea{width:100%;min-height:90px}
+label.t{display:flex;align-items:center;gap:6px;color:var(--mut);font-size:13px}
+.note{color:var(--mut);font-size:13px}
+.warn{border-color:var(--warn)}
+.det td{background:var(--chip);text-align:left;font-size:12px;color:var(--mut)}
+button.m{background:var(--chip);color:var(--tx);border:0;border-radius:8px;padding:8px 12px;font:inherit;cursor:pointer}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><h1>Aksjebot</h1><div class="sub" id="stamp">laster ...</div></header>
+<main id="main"></main>
+<nav id="nav"></nav>
+
+<script>
+const TABS=[["idag","I dag"],["lang","Langsiktig"],["takt","Taktisk"],["papir","Papir"],["indeks","Indekser"],["plan","Min plan"]];
+let D=null,S=null,tab="idag",showAll=false;
+const f=(k,v)=>{try{return JSON.parse(localStorage.getItem(k))??v}catch(e){return v}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pc=(x,d=1)=>x==null?"–":(x*100).toFixed(d).replace(".",",")+" %";
+const sp=x=>{if(x==null)return"–";const v=Math.round(x*1000)/10;return `<span class="${v>=0?"pos":"neg"}">${v>0?"+":""}${v.toFixed(1).replace(".",",").replace("-0,0","0,0")} %</span>`};
+const n0=x=>x==null?"–":Number(x).toLocaleString("nb-NO",{maximumFractionDigits:2});
+const MK={US:"USA",NO:"Oslo"};
+
+async function load(){
+  try{
+    const [a,b]=await Promise.all([fetch("data/latest.json",{cache:"no-store"}),fetch("data/state.json",{cache:"no-store"})]);
+    if(!a.ok||!b.ok)throw 0;
+    D=await a.json();S=await b.json();
+    document.getElementById("stamp").textContent="Data per "+D.as_of;
+  }catch(e){document.getElementById("stamp").textContent="ingen data"}
+  render();
+}
+function nav(){
+  document.getElementById("nav").innerHTML=TABS.map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" data-k="${k}">${l}</button>`).join("");
+  document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{tab=b.dataset.k;render();scrollTo(0,0)});
+}
+function render(){
+  nav();
+  const m=document.getElementById("main");
+  if(!D){m.innerHTML=`<div class="card">Ingen data ennå. Start workflowen "daily" under Actions i repoet. Første kjøring tar noen minutter.</div>`;return}
+  m.innerHTML=({idag,lang,takt,papir,indeks,plan}[tab])();
+  bind();
+}
+function summaryBlock(sm,title){
+  const warn=!sm.enough?`<p class="note">Bare ${sm.n} lukkede handler. Under 30 sier tallene nesten ingenting. Ikke stol på dem ennå.</p>`:"";
+  return `<div class="card ${sm.enough?"":"warn"}"><h2>${title}</h2><div class="grid">
+  <div class="kpi"><b>${sm.n}</b><span>lukkede handler</span></div>
+  <div class="kpi"><b>${sp(sm.avg_excess_ew)}</b><span>snitt mot likevektsindeks</span></div>
+  <div class="kpi"><b>${sp(sm.avg_excess_real)}</b><span>snitt mot ekte indeks</span></div>
+  <div class="kpi"><b>${sm.hit_rate==null?"–":pc(sm.hit_rate,0)}</b><span>andel med pluss</span></div></div>${warn}</div>`;
+}
+function idag(){
+  const u=D.universe,ev=D.events;
+  const evh=ev.length?ev.map(e=>`<div>${evtxt(e)}</div>`).join(""):`<span class="note">Ingen endringer i dag.</span>`;
+  const w=D.warnings.length?`<div class="card warn"><h2>ADVARSLER</h2>${D.warnings.map(x=>`<div>${esc(x)}</div>`).join("")}</div>`:"";
+  const book=Object.values(S.long.open);
+  return `${w}<div class="card"><h2>DAGENS ENDRINGER</h2>${evh}</div>
+  <div class="card"><h2>STATUS</h2><div class="grid">
+  <div class="kpi"><b>${book.length}</b><span>på langsiktig kjøpsliste</span></div>
+  <div class="kpi"><b>${Object.keys(S.tact.open).length}</b><span>åpne taktiske papirsignaler</span></div>
+  <div class="kpi"><b>${u.NO.scored}/${u.NO.n}</b><span>Oslo rangert</span></div>
+  <div class="kpi"><b>${u.US.scored}/${u.US.n}</b><span>USA rangert</span></div></div>
+  <p class="note">Kjøpslisten vurderes første kjøring hver måned. Rangeringen under Langsiktig oppdateres daglig, men endrer seg sakte.</p></div>
+  ${summaryBlock(D.summary.long,"LANGSIKTIG PAPIRBOK")}
+  <div class="card"><h2>SLIK LESER DU DETTE</h2><p class="note">Dette er et analyseverktøy, ikke rådgivning. Rangeringen finner aksjer som ser billige ut med god kvalitet og positiv trend. Den vet ikke hvorfor de er billige. Les alltid selskapets siste rapport før du kjøper. Fortid garanterer ikke fremtid. Papirboken sammenligner uten kurtasje og utbytte.</p></div>`;
+}
+function evtxt(e){
+  const t=`<b>${esc(e.ticker)}</b> ${esc(e.name||"")}`;
+  return ({LONG_INIT:`Startliste: ${t}`,LONG_ENTER:`<span class="pos">Ny på kjøpslisten:</span> ${t}, kurs ${n0(e.entry_price)}`,
+   LONG_EXIT:`<span class="neg">Ut av listen:</span> ${t}, ${esc(e.reason)}, ${sp(e.ret)}`,
+   TACT_ENTER:`Taktisk papirsignal: ${t} (${esc(e.kind)})`,TACT_EXIT:`Taktisk ut: ${t} (${esc(e.reason)}) ${sp(e.ret)}`}[e.type])||esc(e.type);
+}
+function lang(){
+  const st=f("flt",{m:"ALL",q:"",book:false});
+  return `<div class="tools"><select id="fm"><option value="ALL">Alle markeder</option><option value="NO">Oslo</option><option value="US">USA</option></select>
+  <input id="fq" placeholder="Søk ticker eller navn" value="${esc(st.q)}">
+  <label class="t"><input type="checkbox" id="fb" ${st.book?"checked":""}> Bare kjøpsliste</label></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Aksje</th><th>Score</th><th>Verdi</th><th>Kval.</th><th>Mom.</th><th>Kurs</th></tr></thead><tbody id="tb"></tbody></table></div>
+  <p><button class="m" id="more"></button></p></div>
+  <p class="note">Score er prosentrang (0 til 100) mot aksjer i samme marked og gruppe. Banker rangeres for seg. Syklisk bransje (olje, shipping, metall) er merket, og verdi teller halvt.</p>`;
+}
+function fillLang(){
+  const st=f("flt",{m:"ALL",q:"",book:false});
+  document.getElementById("fm").value=st.m;
+  let rows=D.rows.filter(r=>(st.m==="ALL"||r.market===st.m)&&(!st.book||r.in_book)&&(!st.q||(r.ticker+" "+r.name).toLowerCase().includes(st.q.toLowerCase())));
+  const tot=rows.length;if(!showAll)rows=rows.slice(0,40);
+  document.getElementById("more").textContent=showAll?"Vis færre":`Vis alle (${tot})`;
+  document.getElementById("more").hidden=tot<=40;
+  document.getElementById("tb").innerHTML=rows.map((r,i)=>{
+    const ch=[r.in_book?`<span class="chip g">kjøpsliste</span>`:"",r.market==="US"?`<span class="chip w">trolig ikke ASK</span>`:"",...r.flags.map(x=>`<span class="chip w">${esc(x)}</span>`)].join("");
+    const m=r.m;
+    return `<tr class="row" data-i="${esc(r.ticker)}"><td><b>${esc(r.ticker)}</b> <span class="note">${esc(r.name)}</span><br>${ch}</td>
+    <td><b>${r.pct.toFixed(0)}</b><div class="bar"><i style="width:${r.pct}%"></i></div></td><td>${r.value.toFixed(0)}</td><td>${r.quality.toFixed(0)}</td><td>${r.mom.toFixed(0)}</td><td>${n0(r.price)}<br><span class="note">${esc(r.ccy)}</span></td></tr>
+    <tr class="det" hidden id="d-${esc(r.ticker)}"><td colspan="6">Inntjeningsavkastning ${pc(m.ey)} · Fri kontantstrøm/mcap ${pc(m.fcfy)} · EBITDA-avkastning ${pc(m.ebitda_y)} · Bokført verdi/kurs ${pc(m.by)} · ROE ${pc(m.roe)} · Driftsmargin ${pc(m.opm)} · 12-1 mnd ${sp(r.ret_12_1)} · Fall fra topp ${sp(r.dd)} · RSI ${r.rsi??"–"} · Sektor ${esc(r.sector||"–")}</td></tr>`}).join("");
+  document.querySelectorAll("tr.row").forEach(tr=>tr.onclick=()=>{const d=document.getElementById("d-"+tr.dataset.i);d.hidden=!d.hidden});
+}
+function cur(t){const r=D.rows.find(x=>x.ticker===t);return r?r.price:null}
+function takt(){
+  const sig=D.tactical.map(s=>`<tr><td><b>${esc(s.ticker)}</b> <span class="note">${esc(s.name)}</span></td><td>${esc(s.kind)}</td><td>${n0(s.price)}</td></tr>`).join("")||`<tr><td colspan="3" class="note">Ingen signaler i dag.</td></tr>`;
+  const op=Object.values(S.tact.open).map(p=>{const c=cur(p.ticker);return `<tr><td><b>${esc(p.ticker)}</b></td><td>${esc(p.kind)}</td><td>${p.entry_date}</td><td>${sp(c?c/p.entry_price-1:null)}</td></tr>`}).join("")||`<tr><td colspan="4" class="note">Ingen åpne.</td></tr>`;
+  return `<div class="card warn"><h2>VIKTIG</h2><p class="note">Taktiske signaler har ingen dokumentert fordel. De går bare som papirhandel. Ikke kjøp ut fra dem før papirboken har minst 30 lukkede handler som slår indeksen etter kostnader. Regler: ut ved +15 %, stopp ved -8 %, eller etter 40 dager.</p></div>
+  <div class="card"><h2>SIGNALER I DAG</h2><div class="tw"><table><tbody>${sig}</tbody></table></div></div>
+  <div class="card"><h2>ÅPNE PAPIRPOSISJONER</h2><div class="tw"><table><thead><tr><th>Aksje</th><th>Type</th><th>Inn</th><th>Nå</th></tr></thead><tbody>${op}</tbody></table></div></div>
+  ${summaryBlock(D.summary.tact,"TAKTISK PAPIRBOK")}`;
+}
+function papir(){
+  const ew=S.ew;
+  const op=Object.values(S.long.open).map(p=>{const c=cur(p.ticker),e=ew[p.market]?.level;
+    const r=c?c/p.entry_price-1:null,er=e&&p.entry_ew?e/p.entry_ew-1:null;
+    return `<tr><td><b>${esc(p.ticker)}</b> <span class="note">${esc(p.name)}</span></td><td>${p.entry_date}</td><td>${sp(r)}</td><td>${sp(er)}</td></tr>`}).join("")||`<tr><td colspan="4" class="note">Ingen åpne.</td></tr>`;
+  const cl=[...S.long.closed].reverse().slice(0,30).map(c=>`<tr><td><b>${esc(c.ticker)}</b></td><td>${c.entry_date} til ${c.exit_date}</td><td>${sp(c.ret)}</td><td>${sp(c.excess_ew)}</td></tr>`).join("")||`<tr><td colspan="4" class="note">Ingen lukkede.</td></tr>`;
+  return `${summaryBlock(D.summary.long,"LANGSIKTIG")}
+  <div class="card"><h2>ÅPNE POSISJONER</h2><div class="tw"><table><thead><tr><th>Aksje</th><th>Inn</th><th>Avkastning</th><th>Snittaksje</th></tr></thead><tbody>${op}</tbody></table></div></div>
+  <div class="card"><h2>LUKKEDE (SISTE 30)</h2><div class="tw"><table><thead><tr><th>Aksje</th><th>Periode</th><th>Avkastning</th><th>Mot snitt</th></tr></thead><tbody>${cl}</tbody></table></div></div>
+  <p class="note">Snittaksje er et likevektet snitt av alle aksjer i markedet. Er screeningen verdt noe, må den slå dette snittet og i tillegg indeksfondet. Utbytte og kurtasje er ikke med.</p>`;
+}
+function indeks(){
+  const c=D.indices.map(i=>`<div class="card"><h2>${esc(i.name)}</h2><div class="grid"><div class="kpi"><b>${n0(i.price)}</b><span>nivå</span></div>
+  <div class="kpi"><b>${sp(i.ret_12_1)}</b><span>12 mnd uten siste måned</span></div><div class="kpi"><b>${sp(i.dd)}</b><span>fra 52-ukers topp</span></div>
+  <div class="kpi"><b>${i.above200?"over":"under"}</b><span>200-dagers snitt</span></div><div class="kpi"><b>${i.pe?n0(i.pe):"–"}</b><span>P/E</span></div></div></div>`).join("")||`<div class="card note">Ingen indeksdata.</div>`;
+  return c+`<p class="note">Tallene her er informasjon. De er svake som tidssignal. Plan: spar fast hver måned i bredt indeksfond, uavhengig av disse tallene.</p>`;
+}
+function plan(){
+  const p=f("plan",{amt:2000,core:80,hold:""});
+  const book=D.rows.filter(r=>r.in_book&&r.market==="NO").slice(0,8);
+  const sat=Math.round(p.amt*(100-p.core)/100),core=p.amt-sat;
+  const lines=(p.hold||"").split("\n").map(s=>s.trim()).filter(Boolean).map(l=>{const [t,q]=l.split(/\s+/);const r=D.rows.find(x=>x.ticker.toUpperCase()===(t||"").toUpperCase());
+    return {t,q:+q,r}});
+  const hr=lines.map(h=>`<tr><td>${esc(h.t)}</td><td>${h.r?n0(h.q*h.r.price)+" "+esc(h.r.ccy):"ukjent"}</td><td>${h.r?(h.r.in_book?'<span class="chip g">på kjøpslisten</span>':`score ${h.r.pct.toFixed(0)}`):"–"}</td></tr>`).join("");
+  return `<div class="card"><h2>MÅNEDLIG SPARING</h2>
+  <div class="tools"><label class="t">Beløp kr <input id="pa" type="number" value="${p.amt}" style="width:100px"></label>
+  <label class="t">Kjerne % <input id="pcore" type="number" min="0" max="100" value="${p.core}" style="width:70px"></label></div>
+  <p>Kjerne: <b>${n0(core)} kr</b> i bredt indeksfond (global eller norsk). Satellitt: <b>${n0(sat)} kr</b> fordelt på kjøpslisten under.</p>
+  <p class="note">Forslag å starte med, ikke råd. Kjernen er det som slår de fleste aksjeplukkere over år. Satellitten er der botens signaler testes med små beløp.</p></div>
+  <div class="card"><h2>OSLO PÅ KJØPSLISTEN (ASK-vennlig)</h2>${book.map(r=>`<div><b>${esc(r.ticker)}</b> ${esc(r.name)} <span class="chip">score ${r.pct.toFixed(0)}</span>${r.flags.map(x=>`<span class="chip w">${esc(x)}</span>`).join("")}</div>`).join("")||'<span class="note">Tom.</span>'}
+  <p class="note">Spre satellitten over minst 5 aksjer. Ingen enkeltaksje bør være mer enn noen få prosent av alt du eier.</p></div>
+  <div class="card"><h2>MINE BEHOLDNINGER</h2><p class="note">Skriv én per linje: TICKER antall, for eksempel EQNR.OL 10. Lagres bare i denne nettleseren. Ingenting sendes noe sted.</p>
+  <textarea id="ph" placeholder="EQNR.OL 10">${esc(p.hold)}</textarea><div class="tw"><table><tbody>${hr}</tbody></table></div></div>`;
+}
+function bind(){
+  if(tab==="lang"){
+    const st=f("flt",{m:"ALL",q:"",book:false});
+    const u=()=>{sv("flt",st);fillLang()};
+    document.getElementById("fm").onchange=e=>{st.m=e.target.value;u()};
+    document.getElementById("fq").oninput=e=>{st.q=e.target.value;u()};
+    document.getElementById("fb").onchange=e=>{st.book=e.target.checked;u()};
+    document.getElementById("more").onclick=()=>{showAll=!showAll;fillLang()};
+    fillLang();
+  }
+  if(tab==="plan"){
+    const p=f("plan",{amt:2000,core:80,hold:""});
+    const save=()=>{sv("plan",p);};
+    document.getElementById("pa").onchange=e=>{p.amt=Math.max(0,+e.target.value||0);save();render()};
+    document.getElementById("pcore").onchange=e=>{p.core=Math.min(100,Math.max(0,+e.target.value||0));save();render()};
+    document.getElementById("ph").onchange=e=>{p.hold=e.target.value;save();render()};
+  }
+}
+load();
+</script>
+</body>
+</html>
