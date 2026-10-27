@@ -1,6 +1,7 @@
 """Daglig kjøring: hent data, rangér, oppdater papirportefølje, skriv data til docs/data og send varsler."""
 import datetime as dt
 import json
+import math
 import pathlib
 import sys
 
@@ -8,6 +9,21 @@ from . import data, notify, paper, scoring, universe
 
 OUT = pathlib.Path("docs/data")
 MIN_COVERAGE = {"US": 0.80, "NO": 0.55}
+
+
+def clean(x):
+    """JSON tillater ikke NaN eller Infinity. Nettleseren nekter å lese slike filer, så de blir null."""
+    if isinstance(x, float):
+        return x if math.isfinite(x) else None
+    if isinstance(x, dict):
+        return {k: clean(v) for k, v in x.items()}
+    if isinstance(x, (list, tuple)):
+        return [clean(v) for v in x]
+    return x
+
+
+def dump(obj, **kw):
+    return json.dumps(clean(obj), ensure_ascii=False, allow_nan=False, **kw)
 
 
 def load_state():
@@ -125,8 +141,8 @@ def main():
         "events": events,
         "summary": {"long": paper.summary(state["long"]["closed"]), "tact": paper.summary(state["tact"]["closed"])},
     }
-    (OUT / "latest.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
-    (OUT / "state.json").write_text(json.dumps(state, ensure_ascii=False, indent=1))
+    (OUT / "latest.json").write_text(dump(out, separators=(",", ":")))
+    (OUT / "state.json").write_text(dump(state, indent=1))
 
     weekly = None
     if dt.date.fromisoformat(as_of).weekday() == 0:

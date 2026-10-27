@@ -185,3 +185,11 @@ def test_intraday_bar_is_dropped_before_us_close():
     night = dt.datetime(2026, 10, 27, 22, 0, tzinfo=dt.timezone.utc)
     assert len(data.drop_intraday(s, morning)) == 1
     assert len(data.drop_intraday(s, night)) == 2
+
+
+def test_output_json_never_contains_nan():
+    import json
+    from bot import run
+    txt = run.dump({"a": float("nan"), "b": [float("inf"), 1.5], "c": {"d": None}})
+    assert "NaN" not in txt and "Infinity" not in txt
+    assert json.loads(txt) == {"a": None, "b": [None, 1.5], "c": {"d": None}}
