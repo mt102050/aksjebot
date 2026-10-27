@@ -105,7 +105,7 @@ def main():
 
     events = paper.update(state, as_of, rows, tact)
     in_book = set(state["long"]["open"])
-    failed = [r["ticker"] for r in recs if "error" in r]
+    failed = [r["ticker"] for r in recs if "error" in r and "for lite kurshistorikk" not in r["error"]]
     if failed:
         warnings_page = [f"{len(failed)} tickere feilet (se liste i appen)"]
     else:

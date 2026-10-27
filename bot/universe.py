@@ -19,7 +19,7 @@ OSLO = [
     ("HAFNI.OL", "Hafnia"), ("BWLPG.OL", "BW LPG"), ("BWO.OL", "BW Offshore"), ("VAR.OL", "Vår Energi"),
     ("ODL.OL", "Odfjell Drilling"), ("AKSO.OL", "Aker Solutions"), ("TGS.OL", "TGS"),
     ("NOD.OL", "Nordic Semiconductor"), ("ELK.OL", "Elkem"), ("BORR.OL", "Borr Drilling"),
-    ("ENTRA.OL", "Entra"), ("SCHA.OL", "Schibsted A"), ("ATEA.OL", "Atea"), ("KIT.OL", "Kitron"),
+    ("ENTRA.OL", "Entra"), ("ATEA.OL", "Atea"), ("KIT.OL", "Kitron"),
     ("VEI.OL", "Veidekke"), ("AFG.OL", "AF Gruppen"), ("MULTI.OL", "Multiconsult"), ("NRC.OL", "NRC Group"),
     ("HEX.OL", "Hexagon Composites"), ("ARCH.OL", "Archer"), ("DOFG.OL", "DOF Group"), ("SATS.OL", "SATS"), ("AUSS.OL", "Austevoll Seafood"), ("GSF.OL", "Grieg Seafood"),
     ("BNOR.OL", "Bluenord"), ("OTL.OL", "Otello"), ("NEXT.OL", "NEXT Biometrics"), ("SOFF.OL", "Solstad Offshore"),

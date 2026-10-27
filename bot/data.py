@@ -31,8 +31,16 @@ def rsi14(closes: pd.Series):
     return float(100 - 100 / (1 + up / dn))
 
 
-def price_stats(hist: pd.DataFrame):
-    closes = hist["Close"].dropna()
+def drop_intraday(closes: pd.Series, now=None):
+    """Yahoo gir dagens ufullstendige kurs midt i handelsdagen. Bruk bare avsluttede dager."""
+    now = now or dt.datetime.now(dt.timezone.utc)
+    if len(closes) and closes.index[-1].date() >= now.date() and now.hour < 21:
+        return closes.iloc[:-1]
+    return closes
+
+
+def price_stats(hist: pd.DataFrame, now=None):
+    closes = drop_intraday(hist["Close"].dropna(), now)
     if len(closes) < 220:
         raise ValueError("for lite kurshistorikk")
     price = float(closes.iloc[-1])

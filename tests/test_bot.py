@@ -173,3 +173,15 @@ def test_stale_prices_are_rejected():
     out = data.mark_stale(recs)
     assert "error" in next(r for r in out if r["ticker"] == "B")
     assert "error" not in next(r for r in out if r["ticker"] == "A")
+
+
+def test_intraday_bar_is_dropped_before_us_close():
+    import datetime as dt
+    import pandas as pd
+    from bot import data
+    idx = pd.to_datetime(["2026-10-26", "2026-10-27"])
+    s = pd.Series([100.0, 101.0], index=idx)
+    morning = dt.datetime(2026, 10, 27, 8, 0, tzinfo=dt.timezone.utc)
+    night = dt.datetime(2026, 10, 27, 22, 0, tzinfo=dt.timezone.utc)
+    assert len(data.drop_intraday(s, morning)) == 1
+    assert len(data.drop_intraday(s, night)) == 2
