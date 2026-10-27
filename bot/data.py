@@ -96,7 +96,7 @@ def fetch_one(ticker, retries=3, pause=1.5, with_info=True):
     return {"ticker": ticker, "error": str(last)[:160]}
 
 
-def fetch_all(tickers, workers=4, with_info=True):
+def fetch_all(tickers, workers=4, with_info=True, pause=1.5, sleep=0.2):
     CACHE.mkdir(exist_ok=True)
     day = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
     folder = CACHE / day
@@ -106,11 +106,30 @@ def fetch_all(tickers, workers=4, with_info=True):
         f = folder / (t.replace("^", "_") + ".json")
         if f.exists():
             return json.loads(f.read_text())
-        rec = fetch_one(t, with_info=with_info)
+        rec = fetch_one(t, pause=pause, with_info=with_info)
         if "error" not in rec:
             f.write_text(json.dumps(rec))
-        time.sleep(0.2)
+        time.sleep(sleep)
         return rec
 
     with ThreadPoolExecutor(max_workers=workers) as ex:
         return list(ex.map(job, tickers))
+
+
+def mark_stale(recs, max_days=7):
+    """Aksjer uten ferske kurser (nedlagt, flyttet, stoppet) skal ikke rangeres."""
+    ok = [r for r in recs if "error" not in r and r.get("date")]
+    if not ok:
+        return recs
+    latest = {}
+    for r in ok:
+        latest[r["market"]] = max(latest.get(r["market"], ""), r["date"])
+    out = []
+    for r in recs:
+        if "error" in r or not r.get("date"):
+            out.append(r)
+            continue
+        lag = (dt.date.fromisoformat(latest[r["market"]]) - dt.date.fromisoformat(r["date"])).days
+        out.append({"ticker": r["ticker"], "market": r["market"], "name": r.get("name"),
+                    "error": f"foreldet kurs ({r['date']})"} if lag > max_days else r)
+    return out

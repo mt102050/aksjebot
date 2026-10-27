@@ -55,8 +55,21 @@ def main():
     uni = universe.load()
     meta = {u["ticker"]: u for u in uni}
     recs = data.fetch_all([u["ticker"] for u in uni])
+    bad = [r["ticker"] for r in recs if "error" in r]
+    if bad:  # Yahoo stryper ofte tempoet. Ny runde, sakte og én om gangen.
+        again = {r["ticker"]: r for r in data.fetch_all(bad, workers=1, pause=4.0, sleep=1.0)}
+        recs = [again.get(r["ticker"], r) if "error" in r else r for r in recs]
     for r in recs:
         r.update({"name": meta[r["ticker"]]["name"], "market": meta[r["ticker"]]["market"]})
+    recs = data.mark_stale(recs)
+    pairs = {(r["fin_ccy"], r["ccy"]) for r in recs if "error" not in r and r.get("fin_ccy") and r.get("ccy")
+             and r["fin_ccy"] != r["ccy"] and len(r["fin_ccy"]) == 3 and len(r["ccy"]) == 3
+             and r["fin_ccy"].isupper() and r["ccy"].isupper()}
+    fx = {}
+    for fin, ccy in pairs:
+        q = data.fetch_one(f"{fin}{ccy}=X", retries=2, with_info=False)
+        if "error" not in q:
+            fx[(fin, ccy)] = q["price"]
 
     # datadekning: stopp heller enn å gi anbefalinger på dårlig grunnlag
     for mkt, need in MIN_COVERAGE.items():
@@ -68,7 +81,7 @@ def main():
             print(msg)
             sys.exit(1)
 
-    idx = data.fetch_all([t for t, _ in universe.INDICES])
+    idx = data.fetch_all([t for t, _ in universe.INDICES], with_info=False)
     real = {}
     for mkt, cands in universe.REAL_BENCH.items():
         for t in cands:
@@ -83,7 +96,7 @@ def main():
     state["real"].update(real)
 
     warnings += paper.update_ew(state, recs)
-    rows, dropped = scoring.score_universe(recs)
+    rows, dropped = scoring.score_universe(recs, fx)
     if not rows:
         notify.send("Aksjebot: ingen aksjer kunne rangeres i dag.")
         sys.exit(1)

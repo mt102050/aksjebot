@@ -25,15 +25,16 @@ def is_cyclical(r):
     return any(w in text for w in CYCLICAL_WORDS)
 
 
-def features(r):
-    """Nøkkeltall som verdier. None betyr manglende eller upålitelig tall."""
+def features(r, fx=None):
+    """Nøkkeltall som verdier. None betyr manglende eller upålitelig tall.
+    fx: {(regnskapsvaluta, handelsvaluta): kurs}. Uten kurs droppes tall i annen valuta."""
     price = r.get("price")
     ccy, fin = r.get("ccy"), r.get("fin_ccy")
-    same_ccy = not (ccy and fin and ccy != fin)  # ADR-er rapporterer ofte i annen valuta
+    rate = 1.0 if not (ccy and fin and ccy != fin) else (fx or {}).get((fin, ccy))
     f = {}
     eps, mcap, fcf = r.get("eps"), r.get("mcap"), r.get("fcf")
-    f["ey"] = eps / price if same_ccy and eps is not None and price else None
-    f["fcfy"] = fcf / mcap if same_ccy and fcf is not None and mcap else None
+    f["ey"] = eps * rate / price if rate and eps is not None and price else None
+    f["fcfy"] = fcf * rate / mcap if rate and fcf is not None and mcap else None
     ev = r.get("ev_ebitda")
     f["ebitda_y"] = 1 / ev if ev and ev > 0 else None
     pb = r.get("pb")
@@ -55,7 +56,7 @@ def _group_score(df, cols, min_n):
     return score, n
 
 
-def score_universe(records):
+def score_universe(records, fx=None):
     """records: liste med dict (fra data.build_record + market + name).
     Returnerer (rader, ekskluderte). Hver rad får score, pct og flagg."""
     rows, dropped = [], []
@@ -69,7 +70,7 @@ def score_universe(records):
         row = dict(r)
         row["fin"] = is_financial(r)
         row["cyc"] = is_cyclical(r)
-        row["f"] = features(r)
+        row["f"] = features(r, fx)
         rows.append(row)
     if not rows:
         return [], dropped
@@ -113,7 +114,8 @@ def score_universe(records):
     out = []
     for i, r in df.iterrows():
         if pd.isna(r["score"]):
-            dropped.append({"ticker": r["ticker"], "reason": "mangler nok nøkkeltall"})
+            dropped.append({"ticker": r["ticker"], "reason":
+                            f"mangler nok nøkkeltall (verdi {int(r['nval'])}, kvalitet {int(r['nqual'])}, momentum {'ok' if pd.notna(r['mom']) else 'mangler'})"})
             continue
         flags = []
         if r["cyc"]:

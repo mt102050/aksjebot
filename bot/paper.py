@@ -2,6 +2,8 @@
 
 ENTER_PCT = 90      # inn når aksjen er blant øverste 10 prosent
 EXIT_PCT = 70       # ut når den faller under øverste 30 prosent
+MAX_PER_MARKET = 15
+MAX_PER_SECTOR = 4
 TACT_TARGET = 0.15
 TACT_STOP = -0.08
 TACT_MAX_DAYS = 40
@@ -93,10 +95,22 @@ def update(state, today, rows, tactical, review=None):
                 c = _close(lo.pop(t), r["price"], state, today, "falt ut av øverste 30 prosent")
                 state["long"]["closed"].append(c)
                 events.append({"type": "LONG_EXIT", **c})
+        by_mkt, by_sec = {}, {}
+        for t, p in lo.items():
+            rr = by_t.get(t)
+            by_mkt[p["market"]] = by_mkt.get(p["market"], 0) + 1
+            if rr:
+                k = (p["market"], rr.get("sector"))
+                by_sec[k] = by_sec.get(k, 0) + 1
         for r in sorted(rows, key=lambda x: -x["pct"]):
-            if r["ticker"] in lo:
+            if r["ticker"] in lo or r.get("cyc"):
+                continue  # sykliske aksjer vises i rangeringen, men kommer ikke på kjøpslisten
+            key = (r["market"], r.get("sector"))
+            if by_mkt.get(r["market"], 0) >= MAX_PER_MARKET or by_sec.get(key, 0) >= MAX_PER_SECTOR:
                 continue
             if r["pct"] >= ENTER_PCT and r["above200"] and r["quality"] >= 50:
+                by_mkt[r["market"]] = by_mkt.get(r["market"], 0) + 1
+                by_sec[key] = by_sec.get(key, 0) + 1
                 lo[r["ticker"]] = _pos(r, state, today)
                 events.append({"type": "LONG_INIT" if first_run else "LONG_ENTER", **lo[r["ticker"]],
                                "pct": r["pct"]})

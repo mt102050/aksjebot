@@ -140,3 +140,36 @@ def test_notification_only_when_something_happened():
 
 def test_summary_marks_small_samples():
     assert paper.summary([])["enough"] is False
+
+
+def test_fx_conversion_makes_foreign_reporters_scorable():
+    r = rec("EQNR.OL", mkt="NO", ccy="NOK", fin_ccy="USD", eps=2.0, price=100.0, fcf=1e9, mcap=1e10)
+    assert scoring.features(r, None)["ey"] is None
+    f = scoring.features(r, {("USD", "NOK"): 10.0})
+    assert abs(f["ey"] - 0.2) < 1e-9 and abs(f["fcfy"] - 1.0) < 1e-9
+
+
+def test_cyclicals_and_sector_cap_keep_book_diverse():
+    recs = universe(40)
+    for i in range(12):
+        recs.append(rec(f"E{i}", sector="Energy", industry="Oil & Gas E&P", eps=15, fcf=9e8, ev_ebitda=3,
+                        roe=0.5, opm=0.5, pm=0.4, de=5, ret_12_1=0.9))
+    for i in range(12):
+        recs.append(rec(f"S{i}", sector="Healthcare", industry="Drug", eps=14, fcf=9e8, ev_ebitda=3.5,
+                        roe=0.5, opm=0.5, pm=0.4, de=5, ret_12_1=0.8))
+    state = paper.new_state()
+    paper.update_ew(state, recs)
+    rows = _scored(recs)
+    paper.update(state, "2026-10-26", rows, [])
+    held = state["long"]["open"]
+    assert not any(t.startswith("E") for t in held)
+    health = [t for t in held if t.startswith("S")]
+    assert len(health) <= paper.MAX_PER_SECTOR
+
+
+def test_stale_prices_are_rejected():
+    from bot import data
+    recs = [rec("A"), rec("B", date="2022-05-01"), rec("C")]
+    out = data.mark_stale(recs)
+    assert "error" in next(r for r in out if r["ticker"] == "B")
+    assert "error" not in next(r for r in out if r["ticker"] == "A")
