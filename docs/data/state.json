@@ -1,18 +1,21 @@
 {
  "version": 1,
- "last_date": "2026-10-26",
+ "last_date": "2026-10-27",
  "last_review": "2026-10",
  "ew": {
   "NO": {
-   "level": 100.0,
-   "date": "2026-10-23"
+   "level": 101.50466314938456,
+   "date": "2026-10-27"
   },
   "US": {
    "level": 100.0,
    "date": "2026-10-26"
   }
  },
- "real": {},
+ "real": {
+  "US": 7676.77001953125,
+  "NO": 2123.669921875
+ },
  "long": {
   "open": {
    "SBNOR.OL": {
@@ -307,7 +310,58 @@
   "closed": []
  },
  "tact": {
-  "open": {},
+  "open": {
+   "VRSN": {
+    "ticker": "VRSN",
+    "name": "Verisign",
+    "market": "US",
+    "entry_date": "2026-10-27",
+    "entry_price": 308.7200012207031,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125,
+    "kind": "ny 52-ukers topp"
+   },
+   "SNDK": {
+    "ticker": "SNDK",
+    "name": "Sandisk",
+    "market": "US",
+    "entry_date": "2026-10-27",
+    "entry_price": 1255.5799560546875,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125,
+    "kind": "tilbakegang i opptrend"
+   },
+   "EOG": {
+    "ticker": "EOG",
+    "name": "EOG Resources",
+    "market": "US",
+    "entry_date": "2026-10-27",
+    "entry_price": 163.67999267578125,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125,
+    "kind": "ny 52-ukers topp"
+   },
+   "APA": {
+    "ticker": "APA",
+    "name": "APA Corporation",
+    "market": "US",
+    "entry_date": "2026-10-27",
+    "entry_price": 51.65999984741211,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125,
+    "kind": "ny 52-ukers topp"
+   },
+   "FAST": {
+    "ticker": "FAST",
+    "name": "Fastenal",
+    "market": "US",
+    "entry_date": "2026-10-27",
+    "entry_price": 52.470001220703125,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125,
+    "kind": "ny 52-ukers topp"
+   }
+  },
   "closed": []
  }
 }
