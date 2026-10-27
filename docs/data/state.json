@@ -4,8 +4,8 @@
  "last_review": "2026-10",
  "ew": {
   "NO": {
-   "level": 100.0,
-   "date": "2026-10-23"
+   "level": 101.59620596461119,
+   "date": "2026-10-26"
   },
   "US": {
    "level": 100.0,
@@ -166,6 +166,105 @@
     "entry_price": 117.95999908447266,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125
+   },
+   "INDU-C.ST": {
+    "ticker": "INDU-C.ST",
+    "name": "Industrivärden C",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 510.79998779296875,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "BMPS.MI": {
+    "ticker": "BMPS.MI",
+    "name": "Monte dei Paschi",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 10.87399959564209,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "EVO.ST": {
+    "ticker": "EVO.ST",
+    "name": "Evolution",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 837.0,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "LOG.MC": {
+    "ticker": "LOG.MC",
+    "name": "Logista",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 37.08000183105469,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "ELE.MC": {
+    "ticker": "ELE.MC",
+    "name": "Endesa",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 43.849998474121094,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "AENA.MC": {
+    "ticker": "AENA.MC",
+    "name": "Aena",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 26.6200008392334,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "ABI.BR": {
+    "ticker": "ABI.BR",
+    "name": "AB InBev",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 73.5999984741211,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "IAG.MC": {
+    "ticker": "IAG.MC",
+    "name": "IAG",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 4.9079999923706055,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "PNDORA.CO": {
+    "ticker": "PNDORA.CO",
+    "name": "Pandora",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 838.4000244140625,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "SOF.BR": {
+    "ticker": "SOF.BR",
+    "name": "Sofina",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 269.6000061035156,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "ORNBV.HE": {
+    "ticker": "ORNBV.HE",
+    "name": "Orion",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 96.3499984741211,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
    }
   },
   "closed": []
@@ -175,14 +274,146 @@
   "closed": []
  },
  "cyc": {
-  "open": {},
+  "open": {
+   "WWI.OL": {
+    "ticker": "WWI.OL",
+    "name": "Wallenius Wilhelmsen",
+    "market": "NO",
+    "entry_date": "2026-10-26",
+    "entry_price": 882.0,
+    "entry_ew": 101.59620596461119,
+    "entry_real": 2125.050048828125
+   },
+   "APA": {
+    "ticker": "APA",
+    "name": "APA Corporation",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 51.65999984741211,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "MAERSK-A.CO": {
+    "ticker": "MAERSK-A.CO",
+    "name": "Mærsk A",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 23060.0,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "MPCC.OL": {
+    "ticker": "MPCC.OL",
+    "name": "MPC Container Ships",
+    "market": "NO",
+    "entry_date": "2026-10-26",
+    "entry_price": 28.139999389648438,
+    "entry_ew": 101.59620596461119,
+    "entry_real": 2125.050048828125
+   },
+   "MAERSK-B.CO": {
+    "ticker": "MAERSK-B.CO",
+    "name": "Mærsk B",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 23790.0,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "DVN": {
+    "ticker": "DVN",
+    "name": "Devon Energy",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 51.63999938964844,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "OXY": {
+    "ticker": "OXY",
+    "name": "Occidental Petroleum",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 64.06999969482422,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "REP.MC": {
+    "ticker": "REP.MC",
+    "name": "Repsol",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 29.450000762939453,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   },
+   "EOG": {
+    "ticker": "EOG",
+    "name": "EOG Resources",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 163.67999267578125,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "CF": {
+    "ticker": "CF",
+    "name": "CF Industries",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 120.83999633789062,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "HAUTO.OL": {
+    "ticker": "HAUTO.OL",
+    "name": "Höegh Autoliners",
+    "market": "NO",
+    "entry_date": "2026-10-26",
+    "entry_price": 184.0,
+    "entry_ew": 101.59620596461119,
+    "entry_real": 2125.050048828125
+   },
+   "NUE": {
+    "ticker": "NUE",
+    "name": "Nucor",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 257.3500061035156,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "ODF.OL": {
+    "ticker": "ODF.OL",
+    "name": "Odfjell SE",
+    "market": "NO",
+    "entry_date": "2026-10-26",
+    "entry_price": 124.19999694824219,
+    "entry_ew": 101.59620596461119,
+    "entry_real": 2125.050048828125
+   },
+   "TEN.MI": {
+    "ticker": "TEN.MI",
+    "name": "Tenaris",
+    "market": "EU",
+    "entry_date": "2026-10-26",
+    "entry_price": 26.6200008392334,
+    "entry_ew": 100.0,
+    "entry_real": 640.6599731445312
+   }
+  },
   "closed": []
  },
  "inited": {
   "long": [
    "NO",
-   "US"
+   "US",
+   "EU"
   ],
-  "cyc": []
+  "cyc": [
+   "EU",
+   "NO",
+   "US"
+  ]
  }
 }
