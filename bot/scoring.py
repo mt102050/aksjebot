@@ -45,7 +45,45 @@ def features(r, fx=None):
     f["pm"] = r.get("pm")
     de = r.get("de")
     f["de_inv"] = -de if de is not None else None
+    # for sykliske: snittresultat over flere år, og netto gjeld mot EBITDA
+    ni, yrs = r.get("ni_avg"), r.get("ni_years") or 0
+    f["ney"] = ni * rate / mcap if rate and ni is not None and mcap and yrs >= 3 else None
+    debt, cash, ebitda = r.get("debt"), r.get("cash"), r.get("ebitda")
+    nd = None
+    if ebitda and ebitda > 0 and debt is not None:
+        nd = (debt - (cash or 0)) / ebitda
+    f["nd_ebitda"] = nd
+    f["lev_inv"] = -nd if nd is not None else None
     return f
+
+
+CYC_W = {"ney": 0.35, "by": 0.25, "lev_inv": 0.15, "mom": 0.25}
+CYC_ENTER_MAX_LEVERAGE = 3.0
+
+
+def cyclical_scores(df, feat):
+    """Egen rangering for olje, shipping og råvarer. Bruker snittresultat over flere år
+    i stedet for fjorårets resultat, fordi ett toppår gjør P/E misvisende lav."""
+    df["cscore"] = float("nan")
+    df["cpct"] = float("nan")
+    cyc = df[df["cyc"]]
+    if cyc.empty:
+        return
+    counts = cyc["market"].value_counts()
+    grp = cyc["market"].where(cyc["market"].map(counts) >= MIN_GROUP, "alle")
+    for g in grp.unique():
+        idx = grp[grp == g].index
+        ranks = pd.DataFrame({
+            "ney": feat.loc[idx, "ney"], "by": feat.loc[idx, "by"], "lev_inv": feat.loc[idx, "lev_inv"],
+            "mom": df.loc[idx, "ret_12_1"],
+        }).astype(float).rank(pct=True) * 100
+        w = pd.Series(CYC_W)
+        avail = ranks.notna()
+        score = (ranks.fillna(0) * w).sum(axis=1) / (avail * w).sum(axis=1)
+        ok = avail["mom"] & (avail[["ney", "by", "lev_inv"]].sum(axis=1) >= 2)
+        score[~ok] = float("nan")
+        df.loc[idx, "cscore"] = score
+        df.loc[idx, "cpct"] = score.rank(pct=True) * 100
 
 
 def _group_score(df, cols, min_n):
@@ -110,6 +148,7 @@ def score_universe(records, fx=None):
     ok = df[["value", "quality", "mom"]].notna().all(axis=1)
     df.loc[~ok, "score"] = float("nan")
     df["pct"] = df.groupby("grp")["score"].rank(pct=True) * 100
+    cyclical_scores(df, feat)
 
     out = []
     for i, r in df.iterrows():

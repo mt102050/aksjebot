@@ -8,7 +8,7 @@ import sys
 from . import data, notify, paper, scoring, universe
 
 OUT = pathlib.Path("docs/data")
-MIN_COVERAGE = {"US": 0.80, "NO": 0.55}
+MIN_COVERAGE = {"US": 0.80, "NO": 0.55, "EU": 0.60}
 
 
 def clean(x):
@@ -29,11 +29,19 @@ def dump(obj, **kw):
 def load_state():
     f = OUT / "state.json"
     if f.exists():
-        return json.loads(f.read_text())
+        return paper.migrate(json.loads(f.read_text()))
     return paper.new_state()
 
 
-def slim(r, in_book):
+def _r(x, n=1):
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return None
+    return None if v != v else round(v, n)
+
+
+def slim(r, in_book, in_cyc=False):
     f = r["f"]
     return {
         "ticker": r["ticker"], "name": r["name"], "market": r["market"], "sector": r.get("sector"),
@@ -43,6 +51,7 @@ def slim(r, in_book):
         "above200": bool(r["above200"]), "dd": round(r["dd"], 3), "rsi": None if r.get("rsi") is None else round(r["rsi"], 1),
         "ret_12_1": None if r.get("ret_12_1") is None else round(r["ret_12_1"], 3),
         "fin": bool(r["fin"]), "cyc": bool(r["cyc"]), "flags": r["flags"], "in_book": in_book,
+        "in_cyc": in_cyc, "cscore": _r(r.get("cscore")), "cpct": _r(r.get("cpct")),
         "m": {k: (None if v is None else round(v, 4)) for k, v in f.items()},
         "pe": r.get("pe"), "pb": r.get("pb"),
     }
@@ -121,6 +130,7 @@ def main():
 
     events = paper.update(state, as_of, rows, tact)
     in_book = set(state["long"]["open"])
+    in_cyc = set(state["cyc"]["open"])
     failed = [r["ticker"] for r in recs if "error" in r and "for lite kurshistorikk" not in r["error"]]
     if failed:
         warnings_page = [f"{len(failed)} tickere feilet (se liste i appen)"]
@@ -131,15 +141,16 @@ def main():
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "as_of": as_of,
         "universe": {m: {"n": sum(1 for u in uni if u["market"] == m),
-                         "scored": sum(1 for r in rows if r["market"] == m)} for m in ("US", "NO")},
+                         "scored": sum(1 for r in rows if r["market"] == m)} for m in ("NO", "EU", "US")},
         "warnings": warnings + warnings_page,
         "failed": failed,
         "dropped": dropped[:400],
-        "rows": [slim(r, r["ticker"] in in_book) for r in sorted(rows, key=lambda x: -x["pct"])],
+        "rows": [slim(r, r["ticker"] in in_book, r["ticker"] in in_cyc) for r in sorted(rows, key=lambda x: -x["pct"])],
         "tactical": tact,
         "indices": index_rows(idx),
         "events": events,
-        "summary": {"long": paper.summary(state["long"]["closed"]), "tact": paper.summary(state["tact"]["closed"])},
+        "summary": {"long": paper.summary(state["long"]["closed"]), "tact": paper.summary(state["tact"]["closed"]),
+                    "cyc": paper.summary(state["cyc"]["closed"])},
     }
     (OUT / "latest.json").write_text(dump(out, separators=(",", ":")))
     (OUT / "state.json").write_text(dump(state, indent=1))
@@ -147,7 +158,7 @@ def main():
     weekly = None
     if dt.date.fromisoformat(as_of).weekday() == 0:
         s = out["summary"]["long"]
-        weekly = f"Ukestatus: {len(state['long']['open'])} åpne langsiktige, {len(state['tact']['open'])} åpne taktiske. Lukkede langsiktige: {s['n']}."
+        weekly = f"Ukestatus: {len(state['long']['open'])} på kjøpslisten, {len(state['cyc']['open'])} på syklisk liste, {len(state['tact']['open'])} åpne taktiske. Lukkede langsiktige: {s['n']}."
     msg = notify.build_message(as_of, events, warnings, weekly)
     if msg:
         notify.send(msg)

@@ -1,5 +1,7 @@
 """Aksjeunivers. Oslo Børs er en håndlaget liste. Tickere som Yahoo ikke kjenner hoppes over og logges."""
+import csv
 import io
+import pathlib
 
 import pandas as pd
 import requests
@@ -24,7 +26,16 @@ OSLO = [
     ("HEX.OL", "Hexagon Composites"), ("ARCH.OL", "Archer"), ("DOFG.OL", "DOF Group"), ("SATS.OL", "SATS"), ("AUSS.OL", "Austevoll Seafood"), ("GSF.OL", "Grieg Seafood"),
     ("BNOR.OL", "Bluenord"), ("OTL.OL", "Otello"), ("NEXT.OL", "NEXT Biometrics"), ("SOFF.OL", "Solstad Offshore"),
     ("EPR.OL", "Europris"), ("NEL.OL", "Nel"),
-    ("KID.OL", "Kid"), ("CADLR.OL", "Cadeler"),
+    ("KID.OL", "Kid"),
+    # olje og gass
+    ("DNO.OL", "DNO"), ("OKEA.OL", "Okea"), ("BWE.OL", "BW Energy"), ("PEN.OL", "Panoro Energy"),
+    # shipping
+    ("HAUTO.OL", "Höegh Autoliners"), ("ODF.OL", "Odfjell SE"), ("HSHP.OL", "Himalaya Shipping"),
+    ("OET.OL", "Okeanis Eco Tankers"), ("SNI.OL", "Stolt-Nielsen"), ("FLNG.OL", "Flex LNG"),
+    ("KCC.OL", "Klaveness Combination Carriers"), ("2020.OL", "2020 Bulkers"), ("AMSC.OL", "American Shipping Company"),
+    ("EIOF.OL", "Eidesvik Offshore"),
+    # sjømat
+    ("ASA.OL", "Atlantic Sapphire"), ("MAS.OL", "Måsøval"), ("CADLR.OL", "Cadeler"),
 ]
 
 INDICES = [
@@ -35,9 +46,11 @@ INDICES = [
 ]
 
 # Første indeks som gir data brukes som reell referanse per marked.
-REAL_BENCH = {"US": ["^GSPC"], "NO": ["^OSEAX", "OSEBX.OL"]}
+REAL_BENCH = {"US": ["^GSPC"], "NO": ["^OSEAX", "OSEBX.OL"], "EU": ["^STOXX"]}
 
-MIN_MCAP = {"US": 2e9, "NO": 1e9}  # i handelsvaluta (USD / NOK)
+MIN_MCAP = {"US": 2e9, "NO": 1e9, "EU": 1e9}  # i handelsvaluta (USD / NOK / EUR, SEK, DKK)
+
+EU_CSV = pathlib.Path(__file__).with_name("universe_eu.csv")
 
 
 def sp500():
@@ -50,8 +63,15 @@ def sp500():
     return out
 
 
+def europe():
+    """EØS-selskaper fra nasjonale hovedindekser. Britiske og sveitsiske er utelatt (ikke ASK)."""
+    with EU_CSV.open(encoding="utf-8") as f:
+        return [(r["ticker"], r["name"]) for r in csv.DictReader(f)]
+
+
 def load():
     """Returnerer liste med dict(ticker, name, market)."""
     uni = [{"ticker": t, "name": n, "market": "NO"} for t, n in OSLO]
     uni += [{"ticker": t, "name": n, "market": "US"} for t, n in sp500()]
+    uni += [{"ticker": t, "name": n, "market": "EU"} for t, n in europe()]
     return uni

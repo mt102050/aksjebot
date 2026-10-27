@@ -18,7 +18,7 @@ h1{font-size:18px;margin:0}
 .sub{color:var(--mut);font-size:12px}
 main{padding:0 16px;max-width:980px;margin:0 auto}
 nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
-nav button{flex:1;background:none;border:0;color:var(--mut);padding:12px 2px;font:inherit;font-size:12px;cursor:pointer}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:12px 1px;font:inherit;font-size:11px;cursor:pointer;min-width:0}
 nav button[aria-selected=true]{color:var(--acc);font-weight:600}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
 .card h2{font-size:14px;margin:0 0 8px;color:var(--mut);font-weight:600;letter-spacing:.02em}
@@ -53,7 +53,7 @@ button.m{background:var(--chip);color:var(--tx);border:0;border-radius:8px;paddi
 <nav id="nav"></nav>
 
 <script>
-const TABS=[["idag","I dag"],["lang","Langsiktig"],["takt","Taktisk"],["papir","Papir"],["indeks","Indekser"],["plan","Min plan"]];
+const TABS=[["idag","I dag"],["lang","Langsiktig"],["syk","Syklisk"],["takt","Taktisk"],["papir","Papir"],["indeks","Indekser"],["plan","Plan"]];
 let D=null,S=null,tab="idag",showAll=false;
 const f=(k,v)=>{try{return JSON.parse(localStorage.getItem(k))??v}catch(e){return v}};
 const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -61,7 +61,8 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const pc=(x,d=1)=>x==null?"–":(x*100).toFixed(d).replace(".",",")+" %";
 const sp=x=>{if(x==null)return"–";const v=Math.round(x*1000)/10;return `<span class="${v>=0?"pos":"neg"}">${v>0?"+":""}${v.toFixed(1).replace(".",",").replace("-0,0","0,0")} %</span>`};
 const n0=x=>x==null?"–":Number(x).toLocaleString("nb-NO",{maximumFractionDigits:2});
-const MK={US:"USA",NO:"Oslo"};
+const MK={US:"USA",NO:"Oslo",EU:"Europa"};
+const askChip=r=>r.market==="US"?`<span class="chip w">trolig ikke ASK</span>`:r.market==="EU"?`<span class="chip">sjekk ASK</span>`:"";
 
 async function load(){
   try{
@@ -80,7 +81,7 @@ function render(){
   nav();
   const m=document.getElementById("main");
   if(!D){m.innerHTML=`<div class="card">Ingen data ennå. Start workflowen "daily" under Actions i repoet. Første kjøring tar noen minutter.</div>`;return}
-  m.innerHTML=({idag,lang,takt,papir,indeks,plan}[tab])();
+  m.innerHTML=({idag,lang,syk,takt,papir,indeks,plan}[tab])();
   bind();
 }
 function summaryBlock(sm,title){
@@ -100,7 +101,9 @@ function idag(){
   <div class="card"><h2>STATUS</h2><div class="grid">
   <div class="kpi"><b>${book.length}</b><span>på langsiktig kjøpsliste</span></div>
   <div class="kpi"><b>${Object.keys(S.tact.open).length}</b><span>åpne taktiske papirsignaler</span></div>
+  <div class="kpi"><b>${Object.keys(S.cyc?.open||{}).length}</b><span>på syklisk liste</span></div>
   <div class="kpi"><b>${u.NO.scored}/${u.NO.n}</b><span>Oslo rangert</span></div>
+  ${u.EU?`<div class="kpi"><b>${u.EU.scored}/${u.EU.n}</b><span>Europa rangert</span></div>`:""}
   <div class="kpi"><b>${u.US.scored}/${u.US.n}</b><span>USA rangert</span></div></div>
   <p class="note">Kjøpslisten vurderes første kjøring hver måned. Rangeringen under Langsiktig oppdateres daglig, men endrer seg sakte.</p></div>
   ${summaryBlock(D.summary.long,"LANGSIKTIG PAPIRBOK")}
@@ -110,11 +113,13 @@ function evtxt(e){
   const t=`<b>${esc(e.ticker)}</b> ${esc(e.name||"")}`;
   return ({LONG_INIT:`Startliste: ${t}`,LONG_ENTER:`<span class="pos">Ny på kjøpslisten:</span> ${t}, kurs ${n0(e.entry_price)}`,
    LONG_EXIT:`<span class="neg">Ut av listen:</span> ${t}, ${esc(e.reason)}, ${sp(e.ret)}`,
+   CYC_INIT:`Startliste syklisk: ${t}`,CYC_ENTER:`<span class="pos">Ny på syklisk liste:</span> ${t}, kurs ${n0(e.entry_price)}`,
+   CYC_EXIT:`<span class="neg">Ut av syklisk liste:</span> ${t}, ${sp(e.ret)}`,
    TACT_ENTER:`Taktisk papirsignal: ${t} (${esc(e.kind)})`,TACT_EXIT:`Taktisk ut: ${t} (${esc(e.reason)}) ${sp(e.ret)}`}[e.type])||esc(e.type);
 }
 function lang(){
   const st=f("flt",{m:"ALL",q:"",book:false});
-  return `<div class="tools"><select id="fm"><option value="ALL">Alle markeder</option><option value="NO">Oslo</option><option value="US">USA</option></select>
+  return `<div class="tools"><select id="fm"><option value="ALL">Alle markeder</option><option value="NO">Oslo</option><option value="EU">Europa</option><option value="US">USA</option></select>
   <input id="fq" placeholder="Søk ticker eller navn" value="${esc(st.q)}">
   <label class="t"><input type="checkbox" id="fb" ${st.book?"checked":""}> Bare kjøpsliste</label></div>
   <div class="card"><div class="tw"><table><thead><tr><th>Aksje</th><th>Score</th><th>Verdi</th><th>Kval.</th><th>Mom.</th><th>Kurs</th></tr></thead><tbody id="tb"></tbody></table></div>
@@ -129,12 +134,23 @@ function fillLang(){
   document.getElementById("more").textContent=showAll?"Vis færre":`Vis alle (${tot})`;
   document.getElementById("more").hidden=tot<=40;
   document.getElementById("tb").innerHTML=rows.map((r,i)=>{
-    const ch=[r.in_book?`<span class="chip g">kjøpsliste</span>`:"",r.market==="US"?`<span class="chip w">trolig ikke ASK</span>`:"",...r.flags.map(x=>`<span class="chip w">${esc(x)}</span>`)].join("");
+    const ch=[r.in_book?`<span class="chip g">kjøpsliste</span>`:"",r.in_cyc?`<span class="chip g">syklisk liste</span>`:"",askChip(r),...r.flags.map(x=>`<span class="chip w">${esc(x)}</span>`)].join("");
     const m=r.m;
     return `<tr class="row" data-i="${esc(r.ticker)}"><td><b>${esc(r.ticker)}</b> <span class="note">${esc(r.name)}</span><br>${ch}</td>
     <td><b>${r.pct.toFixed(0)}</b><div class="bar"><i style="width:${r.pct}%"></i></div></td><td>${r.value.toFixed(0)}</td><td>${r.quality.toFixed(0)}</td><td>${r.mom.toFixed(0)}</td><td>${n0(r.price)}<br><span class="note">${esc(r.ccy)}</span></td></tr>
     <tr class="det" hidden id="d-${esc(r.ticker)}"><td colspan="6">Inntjeningsavkastning ${pc(m.ey)} · Fri kontantstrøm/mcap ${pc(m.fcfy)} · EBITDA-avkastning ${pc(m.ebitda_y)} · Bokført verdi/kurs ${pc(m.by)} · ROE ${pc(m.roe)} · Driftsmargin ${pc(m.opm)} · 12-1 mnd ${sp(r.ret_12_1)} · Fall fra topp ${sp(r.dd)} · RSI ${r.rsi??"–"} · Sektor ${esc(r.sector||"–")}</td></tr>`}).join("");
   document.querySelectorAll("tr.row").forEach(tr=>tr.onclick=()=>{const d=document.getElementById("d-"+tr.dataset.i);d.hidden=!d.hidden});
+}
+function syk(){
+  const st=f("sykm","ALL");
+  const rows=D.rows.filter(r=>r.cyc&&r.cpct!=null&&(st==="ALL"||r.market===st)).sort((a,b)=>b.cpct-a.cpct);
+  const tr=rows.map(r=>{const m=r.m;return `<tr><td><b>${esc(r.ticker)}</b> <span class="note">${esc(r.name)}</span><br>${r.in_cyc?'<span class="chip g">syklisk liste</span>':""}${askChip(r)}${r.above200?"":'<span class="chip w">under 200-dagers snitt</span>'}${m.nd_ebitda!=null&&m.nd_ebitda>3?'<span class="chip b">høy gjeld</span>':""}</td>
+  <td><b>${r.cpct.toFixed(0)}</b><div class="bar"><i style="width:${r.cpct}%"></i></div></td><td>${pc(m.ney)}</td><td>${pc(m.by,0)}</td><td>${m.nd_ebitda==null?"–":m.nd_ebitda.toFixed(1).replace(".",",")}</td><td>${sp(r.ret_12_1)}</td></tr>`}).join("")||`<tr><td colspan="6" class="note">Ingen sykliske aksjer med nok data.</td></tr>`;
+  return `<div class="card warn"><h2>EGNE REGLER FOR OLJE, SHIPPING OG RÅVARER</h2><p class="note">Fjorårets resultat er misvisende i sykliske bransjer. Et toppår gir lav P/E rett før inntjeningen faller. Denne listen bruker derfor snittresultat over flere år, kurs mot bokført verdi, gjeld og trend. Inn på listen: øverste 20 prosent, over 200-dagers snitt og netto gjeld under 3 ganger EBITDA. Ut under øverste 40 prosent. Maks 8 per marked. Prisen på olje og frakt avgjør mest, og den kjenner ikke boten.</p></div>
+  <div class="tools"><select id="sm"><option value="ALL">Alle markeder</option><option value="NO">Oslo</option><option value="EU">Europa</option><option value="US">USA</option></select></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Aksje</th><th>Score</th><th>Snitt-E/P</th><th>B/P</th><th>Gjeld</th><th>12-1</th></tr></thead><tbody>${tr}</tbody></table></div>
+  <p class="note">Snitt-E/P: snittresultat de siste årene delt på markedsverdi. B/P: bokført verdi delt på kurs. Gjeld: netto gjeld delt på EBITDA.</p></div>
+  ${D.summary.cyc?summaryBlock(D.summary.cyc,"SYKLISK PAPIRBOK"):""}`;
 }
 function cur(t){const r=D.rows.find(x=>x.ticker===t);return r?r.price:null}
 function takt(){
@@ -151,8 +167,11 @@ function papir(){
     const r=c?c/p.entry_price-1:null,er=e&&p.entry_ew?e/p.entry_ew-1:null;
     return `<tr><td><b>${esc(p.ticker)}</b> <span class="note">${esc(p.name)}</span></td><td>${p.entry_date}</td><td>${sp(r)}</td><td>${sp(er)}</td></tr>`}).join("")||`<tr><td colspan="4" class="note">Ingen åpne.</td></tr>`;
   const cl=[...S.long.closed].reverse().slice(0,30).map(c=>`<tr><td><b>${esc(c.ticker)}</b></td><td>${c.entry_date} til ${c.exit_date}</td><td>${sp(c.ret)}</td><td>${sp(c.excess_ew)}</td></tr>`).join("")||`<tr><td colspan="4" class="note">Ingen lukkede.</td></tr>`;
+  const cy=Object.values(S.cyc?.open||{}).map(p=>{const c=cur(p.ticker),e=ew[p.market]?.level;
+    return `<tr><td><b>${esc(p.ticker)}</b> <span class="note">${esc(p.name)}</span></td><td>${p.entry_date}</td><td>${sp(c?c/p.entry_price-1:null)}</td><td>${sp(e&&p.entry_ew?e/p.entry_ew-1:null)}</td></tr>`}).join("")||`<tr><td colspan="4" class="note">Ingen åpne.</td></tr>`;
   return `${summaryBlock(D.summary.long,"LANGSIKTIG")}
   <div class="card"><h2>ÅPNE POSISJONER</h2><div class="tw"><table><thead><tr><th>Aksje</th><th>Inn</th><th>Avkastning</th><th>Snittaksje</th></tr></thead><tbody>${op}</tbody></table></div></div>
+  <div class="card"><h2>SYKLISK LISTE</h2><div class="tw"><table><thead><tr><th>Aksje</th><th>Inn</th><th>Avkastning</th><th>Snittaksje</th></tr></thead><tbody>${cy}</tbody></table></div></div>
   <div class="card"><h2>LUKKEDE (SISTE 30)</h2><div class="tw"><table><thead><tr><th>Aksje</th><th>Periode</th><th>Avkastning</th><th>Mot snitt</th></tr></thead><tbody>${cl}</tbody></table></div></div>
   <p class="note">Snittaksje er et likevektet snitt av alle aksjer i markedet. Er screeningen verdt noe, må den slå dette snittet og i tillegg indeksfondet. Utbytte og kurtasje er ikke med.</p>`;
 }
@@ -164,7 +183,7 @@ function indeks(){
 }
 function plan(){
   const p=f("plan",{amt:2000,core:80,hold:""});
-  const book=D.rows.filter(r=>r.in_book&&r.market==="NO").slice(0,8);
+  const book=D.rows.filter(r=>(r.in_book||r.in_cyc)&&r.market!=="US").slice(0,12);
   const sat=Math.round(p.amt*(100-p.core)/100),core=p.amt-sat;
   const lines=(p.hold||"").split("\n").map(s=>s.trim()).filter(Boolean).map(l=>{const [t,q]=l.split(/\s+/);const r=D.rows.find(x=>x.ticker.toUpperCase()===(t||"").toUpperCase());
     return {t,q:+q,r}});
@@ -174,8 +193,8 @@ function plan(){
   <label class="t">Kjerne % <input id="pcore" type="number" min="0" max="100" value="${p.core}" style="width:70px"></label></div>
   <p>Kjerne: <b>${n0(core)} kr</b> i bredt indeksfond (global eller norsk). Satellitt: <b>${n0(sat)} kr</b> fordelt på kjøpslisten under.</p>
   <p class="note">Forslag å starte med, ikke råd. Kjernen er det som slår de fleste aksjeplukkere over år. Satellitten er der botens signaler testes med små beløp.</p></div>
-  <div class="card"><h2>OSLO PÅ KJØPSLISTEN (ASK-vennlig)</h2>${book.map(r=>`<div><b>${esc(r.ticker)}</b> ${esc(r.name)} <span class="chip">score ${r.pct.toFixed(0)}</span>${r.flags.map(x=>`<span class="chip w">${esc(x)}</span>`).join("")}</div>`).join("")||'<span class="note">Tom.</span>'}
-  <p class="note">Spre satellitten over minst 5 aksjer. Ingen enkeltaksje bør være mer enn noen få prosent av alt du eier.</p></div>
+  <div class="card"><h2>OSLO OG EUROPA PÅ LISTENE (ASK)</h2>${book.map(r=>`<div><b>${esc(r.ticker)}</b> ${esc(r.name)} <span class="chip">${r.in_cyc?"syklisk":"kjøpsliste"}</span>${askChip(r)}${r.flags.filter(x=>!x.startsWith("syklisk")).map(x=>`<span class="chip w">${esc(x)}</span>`).join("")}</div>`).join("")||'<span class="note">Tom.</span>'}
+  <p class="note">Europeiske aksjer må ha hjemland i EØS for å ligge på ASK. Sjekk hos Nordnet før kjøp. Spre satellitten over minst 5 aksjer. Ingen enkeltaksje bør være mer enn noen få prosent av alt du eier.</p></div>
   <div class="card"><h2>MINE BEHOLDNINGER</h2><p class="note">Skriv én per linje: TICKER antall, for eksempel EQNR.OL 10. Lagres bare i denne nettleseren. Ingenting sendes noe sted.</p>
   <textarea id="ph" placeholder="EQNR.OL 10">${esc(p.hold)}</textarea><div class="tw"><table><tbody>${hr}</tbody></table></div></div>`;
 }
@@ -189,6 +208,7 @@ function bind(){
     document.getElementById("more").onclick=()=>{showAll=!showAll;fillLang()};
     fillLang();
   }
+  if(tab==="syk"){const s=document.getElementById("sm");s.value=f("sykm","ALL");s.onchange=e=>{sv("sykm",e.target.value);render()}}
   if(tab==="plan"){
     const p=f("plan",{amt:2000,core:80,hold:""});
     const save=()=>{sv("plan",p);};

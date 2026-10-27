@@ -193,3 +193,53 @@ def test_output_json_never_contains_nan():
     txt = run.dump({"a": float("nan"), "b": [float("inf"), 1.5], "c": {"d": None}})
     assert "NaN" not in txt and "Infinity" not in txt
     assert json.loads(txt) == {"a": None, "b": [None, 1.5], "c": {"d": None}}
+
+
+def _cyc_universe():
+    recs = universe(30)
+    for i in range(12):
+        recs.append(rec(f"C{i}", sector="Energy", industry="Oil & Gas E&P", ni_avg=1e8 * (i + 1), ni_years=4,
+                        mcap=5e9, pb=1.0 + i * 0.1, debt=1e9, cash=5e8, ebitda=1e9, ret_12_1=0.05 * i))
+    return recs
+
+
+def test_cyclicals_get_own_score_from_normalised_earnings():
+    rows = _scored(_cyc_universe())
+    c = {r["ticker"]: r for r in rows if r["cyc"]}
+    assert len(c) == 12 and all(r["cscore"] == r["cscore"] for r in c.values())
+    assert c["C11"]["cpct"] > c["C0"]["cpct"]
+    assert all(r["cscore"] != r["cscore"] for r in rows if not r["cyc"])  # NaN for ikke-sykliske
+
+
+def test_cyclical_book_holds_only_cyclicals_and_respects_leverage():
+    recs = _cyc_universe()
+    recs[-1]["debt"] = 9e9  # C11: netto gjeld / EBITDA over 8
+    state = paper.new_state()
+    paper.update_ew(state, recs)
+    paper.update(state, "2026-10-26", _scored(recs), [])
+    held = state["cyc"]["open"]
+    assert held and all(t.startswith("C") for t in held)
+    assert "C11" not in held
+    assert not any(t.startswith("C") for t in state["long"]["open"])
+
+
+def test_new_market_gets_start_list_mid_month():
+    us = universe(40)
+    state = paper.new_state()
+    paper.update_ew(state, us)
+    paper.update(state, "2026-10-26", _scored(us), [])
+    eu = [dict(r, ticker="E" + r["ticker"], market="EU", ccy="EUR", fin_ccy="EUR") for r in universe(40, seed=3)]
+    both = us + eu
+    paper.update_ew(state, both)
+    ev = paper.update(state, "2026-10-27", _scored(both), [])
+    longs = [e for e in ev if e["type"].startswith("LONG")]
+    assert longs and all(e["type"] == "LONG_INIT" and e["market"] == "EU" for e in longs)
+
+
+def test_migrate_old_state_keeps_existing_markets():
+    old = paper.new_state()
+    del old["cyc"], old["inited"]
+    old["last_review"] = "2026-10"
+    old["ew"] = {"US": {"level": 100, "date": "2026-10-26"}, "NO": {"level": 100, "date": "2026-10-26"}}
+    s = paper.migrate(old)
+    assert s["inited"]["long"] == ["NO", "US"] and s["inited"]["cyc"] == [] and "cyc" in s

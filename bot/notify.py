@@ -3,7 +3,7 @@ import os
 
 import requests
 
-LABEL = {"US": "USA", "NO": "Oslo"}
+LABEL = {"US": "USA", "NO": "Oslo", "EU": "Europa"}
 
 
 def send(text):
@@ -30,15 +30,20 @@ def _line(e):
 def build_message(as_of, events, warnings, weekly=None):
     """Returnerer tekst, eller None når det ikke er noe å melde."""
     parts = []
-    init = [e for e in events if e["type"] == "LONG_INIT"]
-    if init:
-        names = ", ".join(e["ticker"] for e in init)
-        parts.append(f"Startliste langsiktig ({len(init)}): {names}")
+    for kind, label in (("LONG_INIT", "Startliste kjøpsliste"), ("CYC_INIT", "Startliste syklisk")):
+        init = [e for e in events if e["type"] == kind]
+        if init:
+            names = ", ".join(e["ticker"] for e in init)
+            parts.append(f"{label} ({len(init)}): {names}")
     for e in events:
         if e["type"] == "LONG_ENTER":
             parts.append(f"Ny på kjøpslisten: {e['ticker']} ({e['name']}), toppscore {e['pct']:.0f}. Kurs {e['entry_price']:.2f}")
         elif e["type"] == "LONG_EXIT":
             parts.append(f"Ut av listen: {e['ticker']} ({e['name']}). {e['reason']}. Avkastning siden inn {e['ret']*100:+.1f} prosent")
+        elif e["type"] == "CYC_ENTER":
+            parts.append(f"Ny på syklisk liste: {e['ticker']} ({e['name']}). Kurs {e['entry_price']:.2f}")
+        elif e["type"] == "CYC_EXIT":
+            parts.append(f"Ut av syklisk liste: {e['ticker']} ({e['name']}). {e['ret']*100:+.1f} prosent")
         elif e["type"] == "TACT_ENTER":
             parts.append(f"Taktisk papirsignal: {e['ticker']} ({e['kind']}). Kurs {e['entry_price']:.2f}")
         elif e["type"] == "TACT_EXIT":

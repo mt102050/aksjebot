@@ -4,6 +4,10 @@ ENTER_PCT = 90      # inn når aksjen er blant øverste 10 prosent
 EXIT_PCT = 70       # ut når den faller under øverste 30 prosent
 MAX_PER_MARKET = 15
 MAX_PER_SECTOR = 4
+CYC_ENTER_PCT = 80
+CYC_EXIT_PCT = 60
+CYC_MAX_PER_MARKET = 8
+CYC_MAX_LEVERAGE = 3.0  # netto gjeld / EBITDA
 TACT_TARGET = 0.15
 TACT_STOP = -0.08
 TACT_MAX_DAYS = 40
@@ -18,7 +22,80 @@ def new_state():
         "real": {},
         "long": {"open": {}, "closed": []},
         "tact": {"open": {}, "closed": []},
+        "cyc": {"open": {}, "closed": []},
+        "inited": {"long": [], "cyc": []},
     }
+
+
+def migrate(state):
+    """Eldre state-filer mangler syklisk bok. Markeder som alt hadde en startliste regnes som startet."""
+    state.setdefault("cyc", {"open": {}, "closed": []})
+    if "inited" not in state:
+        done = sorted(state.get("ew", {})) if state.get("last_review") else []
+        state["inited"] = {"long": done, "cyc": []}
+    return state
+
+
+def _long_ok(r):
+    return (not r.get("cyc") and r.get("pct") is not None and r["pct"] >= ENTER_PCT
+            and r["above200"] and r["quality"] >= 50)
+
+
+def _cyc_ok(r):
+    nd = (r.get("f") or {}).get("nd_ebitda")
+    return (r.get("cyc") and _num(r.get("cpct")) is not None and r["cpct"] >= CYC_ENTER_PCT
+            and r["above200"] and (nd is None or nd <= CYC_MAX_LEVERAGE))
+
+
+def _num(x):
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return None
+    return None if v != v else v
+
+
+BOOKS = {
+    # navn: (sorteringsfelt, inngang, utgangsgrense, maks per marked, hendelsesprefiks, utgangstekst)
+    "long": ("pct", _long_ok, EXIT_PCT, MAX_PER_MARKET, "LONG", "falt ut av øverste 30 prosent"),
+    "cyc": ("cpct", _cyc_ok, CYC_EXIT_PCT, CYC_MAX_PER_MARKET, "CYC", "falt ut av øverste 40 prosent av sykliske"),
+}
+
+
+def _review(state, name, rows, by_t, today, markets, events):
+    key, ok, exit_below, max_mkt, prefix, why = BOOKS[name]
+    book = state[name]["open"]
+    inited = state["inited"][name]
+    for t in list(book):
+        p, r = book[t], by_t.get(t)
+        if p["market"] not in markets or not r:
+            continue
+        val = _num(r.get(key))
+        if val is None or val < exit_below:
+            c = _close(book.pop(t), r["price"], state, today, why)
+            state[name]["closed"].append(c)
+            events.append({"type": prefix + "_EXIT", **c})
+    by_mkt, by_sec = {}, {}
+    for t, p in book.items():
+        rr = by_t.get(t)
+        by_mkt[p["market"]] = by_mkt.get(p["market"], 0) + 1
+        if rr:
+            k = (p["market"], rr.get("sector"))
+            by_sec[k] = by_sec.get(k, 0) + 1
+    for r in sorted(rows, key=lambda x: -(_num(x.get(key)) or 0)):
+        if r["market"] not in markets or r["ticker"] in book or not ok(r):
+            continue
+        k = (r["market"], r.get("sector"))
+        if by_mkt.get(r["market"], 0) >= max_mkt or by_sec.get(k, 0) >= MAX_PER_SECTOR:
+            continue
+        by_mkt[r["market"]] = by_mkt.get(r["market"], 0) + 1
+        by_sec[k] = by_sec.get(k, 0) + 1
+        book[r["ticker"]] = _pos(r, state, today)
+        kind = "_INIT" if r["market"] not in inited else "_ENTER"
+        events.append({"type": prefix + kind, **book[r["ticker"]], "pct": _num(r.get(key))})
+    for m in markets:
+        if m not in inited:
+            inited.append(m)
 
 
 def update_ew(state, records):
@@ -82,38 +159,18 @@ def update(state, today, rows, tactical, review=None):
     if state["last_date"] and today <= state["last_date"]:
         return events  # ingen ny handelsdag
 
+    migrate(state)
     first_run = state["last_date"] is None
     by_t = {r["ticker"]: r for r in rows}
     do_review = is_review_day(state, today) if review is None else review
+    all_mkts = sorted({r["market"] for r in rows})
 
-    # --- langsiktig bok ---
+    # --- langsiktig og syklisk bok: hele listen månedlig, nye markeder med en gang ---
+    for name in BOOKS:
+        markets = all_mkts if do_review else [m for m in all_mkts if m not in state["inited"][name]]
+        if markets:
+            _review(state, name, rows, by_t, today, markets, events)
     if do_review:
-        lo = state["long"]["open"]
-        for t in list(lo):
-            r = by_t.get(t)
-            if r and r["pct"] < EXIT_PCT:
-                c = _close(lo.pop(t), r["price"], state, today, "falt ut av øverste 30 prosent")
-                state["long"]["closed"].append(c)
-                events.append({"type": "LONG_EXIT", **c})
-        by_mkt, by_sec = {}, {}
-        for t, p in lo.items():
-            rr = by_t.get(t)
-            by_mkt[p["market"]] = by_mkt.get(p["market"], 0) + 1
-            if rr:
-                k = (p["market"], rr.get("sector"))
-                by_sec[k] = by_sec.get(k, 0) + 1
-        for r in sorted(rows, key=lambda x: -x["pct"]):
-            if r["ticker"] in lo or r.get("cyc"):
-                continue  # sykliske aksjer vises i rangeringen, men kommer ikke på kjøpslisten
-            key = (r["market"], r.get("sector"))
-            if by_mkt.get(r["market"], 0) >= MAX_PER_MARKET or by_sec.get(key, 0) >= MAX_PER_SECTOR:
-                continue
-            if r["pct"] >= ENTER_PCT and r["above200"] and r["quality"] >= 50:
-                by_mkt[r["market"]] = by_mkt.get(r["market"], 0) + 1
-                by_sec[key] = by_sec.get(key, 0) + 1
-                lo[r["ticker"]] = _pos(r, state, today)
-                events.append({"type": "LONG_INIT" if first_run else "LONG_ENTER", **lo[r["ticker"]],
-                               "pct": r["pct"]})
         state["last_review"] = today[:7]
 
     # --- taktisk bok ---

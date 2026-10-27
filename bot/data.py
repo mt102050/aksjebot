@@ -84,8 +84,24 @@ def build_record(ticker, info, hist):
         "opm": num(info.get("operatingMargins")),
         "pm": num(info.get("profitMargins")),
         "de": num(info.get("debtToEquity")),
+        "debt": num(info.get("totalDebt")),
+        "cash": num(info.get("totalCash")),
+        "ebitda": num(info.get("ebitda")),
     })
     return rec
+
+
+def avg_net_income(stmt):
+    """Snitt av årsresultat over tilgjengelige år (Yahoo gir normalt 4). Brukes for sykliske selskaper."""
+    if stmt is None or getattr(stmt, "empty", True):
+        return None, 0
+    for key in ("Net Income", "Net Income Common Stockholders"):
+        if key in stmt.index:
+            vals = [num(v) for v in stmt.loc[key].tolist()]
+            vals = [v for v in vals if v is not None]
+            if vals:
+                return sum(vals) / len(vals), len(vals)
+    return None, 0
 
 
 def fetch_one(ticker, retries=3, pause=1.5, with_info=True):
@@ -97,7 +113,15 @@ def fetch_one(ticker, retries=3, pause=1.5, with_info=True):
             if hist is None or hist.empty:
                 raise ValueError("ingen kursdata")
             info = (t.info or {}) if with_info else {}
-            return build_record(ticker, info, hist)
+            rec = build_record(ticker, info, hist)
+            if with_info:
+                from .scoring import is_cyclical
+                if is_cyclical(rec):
+                    try:
+                        rec["ni_avg"], rec["ni_years"] = avg_net_income(t.income_stmt)
+                    except Exception:  # noqa: BLE001 - mangler regnskap gir bare færre nøkkeltall
+                        rec["ni_avg"], rec["ni_years"] = None, 0
+            return rec
         except Exception as e:  # noqa: BLE001 - Yahoo kaster mange ulike feil
             last = e
             time.sleep(pause * (2 ** i))
