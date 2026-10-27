@@ -100,7 +100,7 @@ def main():
     for mkt, need in MIN_COVERAGE.items():
         total = sum(1 for u in uni if u["market"] == mkt)
         good = sum(1 for r in recs if r["market"] == mkt and "error" not in r)
-        if total and good / total < need:
+        if total == 0 or good / total < need:
             msg = f"Datafeil {mkt}: bare {good} av {total} aksjer hentet. Ingen anbefalinger i dag."
             notify.send("Aksjebot: " + msg)
             print(msg)

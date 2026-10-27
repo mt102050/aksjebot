@@ -277,3 +277,9 @@ def test_seafood_counts_as_cyclical_and_mcap_fallback():
     assert scoring.is_cyclical({"sector": "Consumer Defensive", "industry": "Farm Products"})
     assert data._mcap_fallback({"sharesOutstanding": 1e6}, 50.0) == 5e7
     assert data._mcap_fallback({}, 50.0) is None
+
+
+def test_universe_files_are_not_empty():
+    from bot import universe
+    assert len(universe.europe()) > 200
+    assert len(universe.OSLO) > 50

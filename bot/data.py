@@ -120,6 +120,11 @@ def fetch_one(ticker, retries=3, pause=1.5, with_info=True):
                 raise ValueError("ingen kursdata")
             info = (t.info or {}) if with_info else {}
             rec = build_record(ticker, info, hist)
+            if with_info and rec["mcap"] is None:
+                try:
+                    rec["mcap"] = num(t.fast_info["marketCap"])
+                except Exception:  # noqa: BLE001
+                    pass
             if with_info:
                 from .scoring import is_cyclical
                 if is_cyclical(rec):
