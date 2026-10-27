@@ -243,3 +243,16 @@ def test_migrate_old_state_keeps_existing_markets():
     old["ew"] = {"US": {"level": 100, "date": "2026-10-26"}, "NO": {"level": 100, "date": "2026-10-26"}}
     s = paper.migrate(old)
     assert s["inited"]["long"] == ["NO", "US"] and s["inited"]["cyc"] == [] and "cyc" in s
+
+
+def test_new_book_starts_even_without_new_trading_day():
+    recs = _cyc_universe()
+    state = paper.new_state()
+    paper.update_ew(state, recs)
+    rows = _scored(recs)
+    paper.update(state, "2026-10-26", rows, [])
+    state["cyc"] = {"open": {}, "closed": []}
+    state["inited"]["cyc"] = []
+    ev = paper.update(state, "2026-10-26", rows, [])
+    assert ev and all(e["type"] == "CYC_INIT" for e in ev)
+    assert paper.update(state, "2026-10-26", rows, []) == []

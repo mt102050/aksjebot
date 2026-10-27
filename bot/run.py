@@ -126,6 +126,15 @@ def main():
         notify.send("Aksjebot: ingen aksjer kunne rangeres i dag.")
         sys.exit(1)
     as_of = max(r["date"] for r in recs if "error" not in r)
+    dates = {}
+    for r in recs:
+        if "error" not in r:
+            dates[r["market"]] = max(dates.get(r["market"], ""), r["date"])
+    label = {"NO": "Oslo", "EU": "Europa", "US": "USA"}
+    lag_notes = []  # bare i appen, ikke på Telegram
+    for m, d in sorted(dates.items()):
+        if d < as_of:
+            lag_notes.append(f"{label.get(m, m)}: siste kurs er fra {d}. Yahoo ligger etter.")
     tact = scoring.tactical_signals(rows)
 
     events = paper.update(state, as_of, rows, tact)
@@ -140,9 +149,10 @@ def main():
     out = {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "as_of": as_of,
+        "dates": dates,
         "universe": {m: {"n": sum(1 for u in uni if u["market"] == m),
                          "scored": sum(1 for r in rows if r["market"] == m)} for m in ("NO", "EU", "US")},
-        "warnings": warnings + warnings_page,
+        "warnings": warnings + warnings_page + lag_notes,
         "failed": failed,
         "dropped": dropped[:400],
         "rows": [slim(r, r["ticker"] in in_book, r["ticker"] in in_cyc) for r in sorted(rows, key=lambda x: -x["pct"])],

@@ -156,10 +156,17 @@ def is_review_day(state, today):
 def update(state, today, rows, tactical, review=None):
     """Oppdaterer papirporteføljen. Returnerer hendelser. Langsiktig vurderes første kjøring hver måned."""
     events = []
-    if state["last_date"] and today <= state["last_date"]:
-        return events  # ingen ny handelsdag
-
     migrate(state)
+    if state["last_date"] and today <= state["last_date"]:
+        # ingen ny handelsdag: bare nye markeder eller bøker får startliste
+        by_t = {r["ticker"]: r for r in rows}
+        all_mkts = sorted({r["market"] for r in rows})
+        for name in BOOKS:
+            new = [m for m in all_mkts if m not in state["inited"][name]]
+            if new:
+                _review(state, name, rows, by_t, today, new, events)
+        return events
+
     first_run = state["last_date"] is None
     by_t = {r["ticker"]: r for r in rows}
     do_review = is_review_day(state, today) if review is None else review

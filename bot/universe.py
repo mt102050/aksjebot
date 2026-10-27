@@ -31,9 +31,7 @@ OSLO = [
     ("DNO.OL", "DNO"), ("OKEA.OL", "Okea"), ("BWE.OL", "BW Energy"), ("PEN.OL", "Panoro Energy"),
     # shipping
     ("HAUTO.OL", "Höegh Autoliners"), ("ODF.OL", "Odfjell SE"), ("HSHP.OL", "Himalaya Shipping"),
-    ("OET.OL", "Okeanis Eco Tankers"), ("SNI.OL", "Stolt-Nielsen"), ("FLNG.OL", "Flex LNG"),
-    ("KCC.OL", "Klaveness Combination Carriers"), ("2020.OL", "2020 Bulkers"), ("AMSC.OL", "American Shipping Company"),
-    ("EIOF.OL", "Eidesvik Offshore"),
+    ("OET.OL", "Okeanis Eco Tankers"), ("SNI.OL", "Stolt-Nielsen"), ("KCC.OL", "Klaveness Combination Carriers"), ("2020.OL", "2020 Bulkers"), ("EIOF.OL", "Eidesvik Offshore"),
     # sjømat
     ("ASA.OL", "Atlantic Sapphire"), ("MAS.OL", "Måsøval"), ("CADLR.OL", "Cadeler"),
 ]
