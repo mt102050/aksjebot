@@ -406,5 +406,170 @@
    "NO",
    "US"
   ]
+ },
+ "test": {
+  "last_date": "2026-10-26",
+  "pending": [
+   {
+    "port": "A",
+    "side": "buy",
+    "ticker": "NONG.OL",
+    "market": "NO",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "A",
+    "side": "buy",
+    "ticker": "INDU-C.ST",
+    "market": "EU",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "A",
+    "side": "buy",
+    "ticker": "BMPS.MI",
+    "market": "EU",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "A",
+    "side": "buy",
+    "ticker": "EVO.ST",
+    "market": "EU",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "A",
+    "side": "buy",
+    "ticker": "LOG.MC",
+    "market": "EU",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "B",
+    "side": "buy",
+    "ticker": "NONG.OL",
+    "market": "NO",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "B",
+    "side": "buy",
+    "ticker": "ALL",
+    "market": "US",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "B",
+    "side": "buy",
+    "ticker": "MU",
+    "market": "US",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "B",
+    "side": "buy",
+    "ticker": "INDU-C.ST",
+    "market": "EU",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "B",
+    "side": "buy",
+    "ticker": "SNDK",
+    "market": "US",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "C",
+    "side": "buy",
+    "ticker": "SHL.DE",
+    "market": "EU",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "C",
+    "side": "buy",
+    "ticker": "PLT.OL",
+    "market": "NO",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "C",
+    "side": "buy",
+    "ticker": "AC.PA",
+    "market": "EU",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "C",
+    "side": "buy",
+    "ticker": "IDR.MC",
+    "market": "EU",
+    "signal": "2026-10-26"
+   },
+   {
+    "port": "C",
+    "side": "buy",
+    "ticker": "AUTO.OL",
+    "market": "NO",
+    "signal": "2026-10-26"
+   }
+  ],
+  "ports": {
+   "A": {
+    "lots": [],
+    "closed": [],
+    "realized": 0.0,
+    "invested": 0.0,
+    "fees": 0.0,
+    "bench_lots": [],
+    "bench_realized": 0.0
+   },
+   "B": {
+    "lots": [],
+    "closed": [],
+    "realized": 0.0,
+    "invested": 0.0,
+    "fees": 0.0,
+    "bench_lots": [],
+    "bench_realized": 0.0
+   },
+   "C": {
+    "lots": [],
+    "closed": [],
+    "realized": 0.0,
+    "invested": 0.0,
+    "fees": 0.0,
+    "bench_lots": [],
+    "bench_realized": 0.0
+   }
+  },
+  "history": [
+   {
+    "date": "2026-10-26",
+    "A": {
+     "invested": 0.0,
+     "value": 0.0,
+     "bench": 0.0,
+     "fees": 0.0,
+     "open": 0
+    },
+    "B": {
+     "invested": 0.0,
+     "value": 0.0,
+     "bench": 0.0,
+     "fees": 0.0,
+     "open": 0
+    },
+    "C": {
+     "invested": 0.0,
+     "value": 0.0,
+     "bench": 0.0,
+     "fees": 0.0,
+     "open": 0
+    }
+   }
+  ]
  }
 }
