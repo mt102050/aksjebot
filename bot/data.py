@@ -141,11 +141,14 @@ def fetch_one(ticker, retries=3, pause=1.5, with_info=True):
             return rec
         except Exception as e:  # noqa: BLE001 - Yahoo kaster mange ulike feil
             last = e
-            time.sleep(pause * (2 ** i))
+            if "Too Many Requests" in str(e) or "Rate limited" in str(e):
+                time.sleep(20 * (i + 1))  # Yahoo struper. Vent lenge, ellers blir det verre.
+            else:
+                time.sleep(pause * (2 ** i))
     return {"ticker": ticker, "error": str(last)[:160]}
 
 
-def fetch_all(tickers, workers=4, with_info=True, pause=1.5, sleep=0.2):
+def fetch_all(tickers, workers=2, with_info=True, pause=1.5, sleep=0.5):
     CACHE.mkdir(exist_ok=True)
     day = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
     folder = CACHE / day

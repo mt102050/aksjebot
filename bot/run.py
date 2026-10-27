@@ -8,7 +8,7 @@ import sys
 from . import data, notify, paper, scoring, technical, universe
 
 OUT = pathlib.Path("docs/data")
-MIN_COVERAGE = {"US": 0.80, "NO": 0.30, "EU": 0.60}  # NO lav midlertidig: ny Oslo-liste ryddes etter første kjøring
+MIN_COVERAGE = {"US": 0.80, "NO": 0.55, "EU": 0.60}
 
 
 def clean(x):
@@ -114,7 +114,7 @@ def main():
     recs = data.fetch_all([u["ticker"] for u in uni])
     bad = [r["ticker"] for r in recs if "error" in r]
     if bad:  # Yahoo stryper ofte tempoet. Ny runde, sakte og én om gangen.
-        again = {r["ticker"]: r for r in data.fetch_all(bad[:40], workers=2, pause=2.0, sleep=1.0)}
+        again = {r["ticker"]: r for r in data.fetch_all(bad[:150], workers=1, pause=2.0, sleep=1.5)}
         recs = [again.get(r["ticker"], r) if "error" in r else r for r in recs]
     for r in recs:
         r.update({"name": r.get("yname") or meta[r["ticker"]]["name"], "market": meta[r["ticker"]]["market"]})
