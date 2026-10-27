@@ -68,7 +68,13 @@ def _review(state, name, rows, by_t, today, markets, events):
     inited = state["inited"][name]
     for t in list(book):
         p, r = book[t], by_t.get(t)
-        if p["market"] not in markets or not r:
+        if p["market"] not in markets:
+            continue
+        if not r:  # borte fra universet (oppkjøp, avnotering, fjernet fra listen)
+            if p.get("last_price"):
+                c = _close(book.pop(t), p["last_price"], state, today, "ikke lenger i universet")
+                state[name]["closed"].append(c)
+                events.append({"type": prefix + "_EXIT", **c})
             continue
         val = _num(r.get(key))
         if val is None or val < exit_below:
@@ -169,6 +175,10 @@ def update(state, today, rows, tactical, review=None):
 
     first_run = state["last_date"] is None
     by_t = {r["ticker"]: r for r in rows}
+    for name in ("long", "cyc", "tact"):
+        for t, p in state[name]["open"].items():
+            if t in by_t:
+                p["last_price"] = by_t[t]["price"]
     do_review = is_review_day(state, today) if review is None else review
     all_mkts = sorted({r["market"] for r in rows})
 

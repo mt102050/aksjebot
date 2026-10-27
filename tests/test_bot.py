@@ -256,3 +256,24 @@ def test_new_book_starts_even_without_new_trading_day():
     ev = paper.update(state, "2026-10-26", rows, [])
     assert ev and all(e["type"] == "CYC_INIT" for e in ev)
     assert paper.update(state, "2026-10-26", rows, []) == []
+
+
+def test_position_closes_at_last_price_when_ticker_disappears():
+    recs = universe(40)
+    state = paper.new_state()
+    paper.update_ew(state, recs)
+    rows = _scored(recs)
+    paper.update(state, "2026-10-26", rows, [])
+    gone = next(iter(state["long"]["open"]))
+    paper.update(state, "2026-10-27", rows, [])
+    left = [r for r in rows if r["ticker"] != gone]
+    ev = paper.update(state, "2026-11-02", left, [])
+    ex = [e for e in ev if e["type"] == "LONG_EXIT" and e["ticker"] == gone]
+    assert ex and ex[0]["reason"] == "ikke lenger i universet"
+
+
+def test_seafood_counts_as_cyclical_and_mcap_fallback():
+    from bot import data
+    assert scoring.is_cyclical({"sector": "Consumer Defensive", "industry": "Farm Products"})
+    assert data._mcap_fallback({"sharesOutstanding": 1e6}, 50.0) == 5e7
+    assert data._mcap_fallback({}, 50.0) is None

@@ -66,6 +66,12 @@ def price_stats(hist: pd.DataFrame, now=None):
     }
 
 
+def _mcap_fallback(info, price):
+    """Yahoo mangler av og til markedsverdi (for eksempel Frontline, Gjensidige). Regn den ut selv."""
+    shares = num(info.get("sharesOutstanding"))
+    return shares * price if shares and price else None
+
+
 def build_record(ticker, info, hist):
     rec = price_stats(hist)
     rec.update({
@@ -74,7 +80,7 @@ def build_record(ticker, info, hist):
         "industry": info.get("industry"),
         "ccy": info.get("currency"),
         "fin_ccy": info.get("financialCurrency"),
-        "mcap": num(info.get("marketCap")),
+        "mcap": num(info.get("marketCap")) or _mcap_fallback(info, rec["price"]),
         "eps": num(info.get("trailingEps")),
         "fcf": num(info.get("freeCashflow")),
         "ev_ebitda": num(info.get("enterpriseToEbitda")),

@@ -5,7 +5,8 @@ from .universe import MIN_MCAP
 
 W_VALUE, W_QUALITY, W_MOM = 0.40, 0.35, 0.25
 CYCLICAL_SECTORS = {"Energy", "Basic Materials"}
-CYCLICAL_WORDS = ("shipping", "marine", "oil", "drilling", "tanker", "gas", "steel", "aluminum", "copper")
+CYCLICAL_WORDS = ("shipping", "marine", "oil", "drilling", "tanker", "gas", "steel", "aluminum", "copper",
+                  "farm products")  # sjømat (laks) og landbruk følger råvarepriser
 MIN_GROUP = 8
 
 VALUE_NONFIN = ["ey", "fcfy", "ebitda_y"]

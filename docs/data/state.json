@@ -293,15 +293,6 @@
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125
    },
-   "MAERSK-A.CO": {
-    "ticker": "MAERSK-A.CO",
-    "name": "Mærsk A",
-    "market": "EU",
-    "entry_date": "2026-10-26",
-    "entry_price": 23060.0,
-    "entry_ew": 100.0,
-    "entry_real": 640.6599731445312
-   },
    "MPCC.OL": {
     "ticker": "MPCC.OL",
     "name": "MPC Container Ships",
