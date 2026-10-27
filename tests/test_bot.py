@@ -322,3 +322,69 @@ def test_chart_json_is_valid():
     txt = run.dump(technical.analyse(_ohlc()))
     assert "NaN" not in txt
     assert json.loads(txt)["summary"]["notes"]
+
+
+def _test_rows():
+    rows = []
+    for i in range(40):
+        for mkt, sfx, ccy in (("NO", ".OL", "NOK"), ("EU", ".DE", "EUR"), ("US", "", "USD")):
+            rows.append({"ticker": f"T{i}{sfx}", "name": f"T{i}", "market": mkt, "ccy": ccy, "price": 100.0,
+                         "pct": 100 - i * 2.5, "above200": True, "quality": 80, "cyc": False})
+    return rows
+
+
+FX = {"EUR": 11.0, "USD": 10.0, "SEK": 1.0, "DKK": 1.5}
+BENCH = {"NO": (1000.0, "NOK"), "EU": (500.0, "EUR"), "US": (5000.0, "USD")}
+
+
+def test_fee_matches_nordnet_mini():
+    from bot import testport
+    assert testport.fee("EQNR.OL", 1000, "NOK") == 29
+    assert abs(testport.fee("AAPL", 1000, "USD") - 51.5) < 1e-9
+    assert abs(testport.fee("SAP.DE", 100000, "EUR") - (200 + 250)) < 1e-9
+
+
+def test_test_portfolio_buys_next_day_with_fees_and_shadow_index():
+    from bot import testport
+    t = testport.new_test()
+    rows = _test_rows()
+    testport.run_day(t, "2026-10-27", rows, FX, BENCH)
+    assert all(not p["lots"] for p in t["ports"].values())  # bare ordre første dag
+    ev = testport.run_day(t, "2026-10-28", rows, FX, BENCH)
+    a, b, c = (t["ports"][k] for k in "ABC")
+    assert len(a["lots"]) == len(b["lots"]) == len(c["lots"]) == 5
+    assert all(l["market"] in ("NO", "EU") for l in a["lots"] + c["lots"])
+    h = t["history"][-1]["A"]
+    assert h["invested"] == 5000 and h["bench"] == 5000 and h["value"] < 5000  # kurtasje trukket
+    # samme dag på nytt endrer ingenting
+    assert testport.run_day(t, "2026-10-28", rows, FX, BENCH) == []
+    # neste dag: ingen dobbeltkjøp i samme aksje
+    testport.run_day(t, "2026-10-29", rows, FX, BENCH)
+    for p in t["ports"].values():
+        tick = [l["ticker"] for l in p["lots"]]
+        assert len(tick) == len(set(tick))
+
+
+def test_test_portfolio_sells_after_hold_period_and_measures_vs_index():
+    from bot import testport
+    t = testport.new_test()
+    rows = _test_rows()
+    testport.run_day(t, "2026-10-27", rows, FX, BENCH)
+    testport.run_day(t, "2026-10-28", rows, FX, BENCH)
+    up = [dict(r, price=110.0) for r in rows]
+    testport.run_day(t, "2027-01-28", up, FX, BENCH)   # 92 dager: salgsordre
+    testport.run_day(t, "2027-01-29", up, FX, BENCH)   # utføres
+    closed = [c for c in t["ports"]["A"]["closed"] if c["buy_date"] == "2026-10-28"]
+    assert len(closed) == 5
+    nok = next(c for c in closed if c["ticker"].endswith(".OL"))
+    assert 0.03 < nok["ret"] < 0.1 and nok["bench_ret"] == 0
+
+
+def test_control_group_matches_count_and_is_reproducible():
+    from bot import testport
+    rows = _test_rows()
+    o1 = testport.make_orders(testport.new_test(), "2026-10-27", rows)
+    o2 = testport.make_orders(testport.new_test(), "2026-10-27", rows)
+    ca = [o for o in o1 if o["port"] == "C"]
+    assert len(ca) == sum(1 for o in o1 if o["port"] == "A")
+    assert ca == [o for o in o2 if o["port"] == "C"]

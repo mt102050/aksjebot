@@ -5,7 +5,7 @@ import math
 import pathlib
 import sys
 
-from . import data, notify, paper, scoring, technical, universe
+from . import data, notify, paper, scoring, technical, testport, universe
 
 OUT = pathlib.Path("docs/data")
 MIN_COVERAGE = {"US": 0.80, "NO": 0.55, "EU": 0.60}
@@ -170,6 +170,18 @@ def main():
     tact = scoring.tactical_signals(rows)
 
     events = paper.update(state, as_of, rows, tact)
+
+    # testporteføljer i kroner
+    fx = {}
+    for c in ("EUR", "SEK", "DKK", "USD"):
+        q = data.fetch_one(f"{c}NOK=X", retries=2, with_info=False)
+        if "error" not in q:
+            fx[c] = q["price"]
+        else:
+            warnings.append(f"Fant ikke valutakurs {c}/NOK. Testporteføljen hopper over aksjer i {c}.")
+    bench = {m: (p, {"NO": "NOK", "EU": "EUR", "US": "USD"}[m]) for m, p in state["real"].items()}
+    test = state.setdefault("test", testport.new_test())
+    test_events = testport.run_day(test, as_of, rows, fx, bench)
     in_book = set(state["long"]["open"])
     in_cyc = set(state["cyc"]["open"])
     failed = [r["ticker"] for r in recs if "error" in r and "for lite kurshistorikk" not in r["error"]]
@@ -191,6 +203,12 @@ def main():
         "rows": [slim(r, r["ticker"] in in_book, r["ticker"] in in_cyc) for r in sorted(rows, key=lambda x: -x["pct"])],
         "tactical": tact,
         "top10": top10,
+        "test": {"summary": testport.summary(test), "history": test["history"],
+                 "pending": len(test["pending"]), "events": test_events,
+                 "lots": {k: [{"ticker": l["ticker"], "name": l["name"], "buy_date": l["buy_date"],
+                               "ret": l["shares"] * l["last_nok"] / testport.LOT_NOK - 1}
+                              for l in v["lots"]] for k, v in test["ports"].items()},
+                 "rules": {"lot": testport.LOT_NOK, "hold_days": testport.HOLD_DAYS, "ports": testport.PORTS}},
         "indices": index_rows(idx),
         "events": events,
         "summary": {"long": paper.summary(state["long"]["closed"]), "tact": paper.summary(state["tact"]["closed"]),
@@ -202,7 +220,10 @@ def main():
     weekly = None
     if dt.date.fromisoformat(as_of).weekday() == 0:
         s = out["summary"]["long"]
-        weekly = f"Ukestatus: {len(state['long']['open'])} på kjøpslisten, {len(state['cyc']['open'])} på syklisk liste, {len(state['tact']['open'])} åpne taktiske. Lukkede langsiktige: {s['n']}."
+        ts = out["test"]["summary"]
+        tline = " ".join(f"{k}: {((ts[k]['ret'] or 0) - (ts[k]['bench_ret'] or 0)) * 100:+.1f} pp mot indeks."
+                         for k in ("A", "B", "C") if ts[k]["invested"])
+        weekly = (f"Testportefølje etter {ts['days']} dager. {tline} " if tline else "") + f"Ukestatus: {len(state['long']['open'])} på kjøpslisten, {len(state['cyc']['open'])} på syklisk liste, {len(state['tact']['open'])} åpne taktiske. Lukkede langsiktige: {s['n']}."
     msg = notify.build_message(as_of, events, warnings, weekly)
     if msg:
         notify.send(msg)

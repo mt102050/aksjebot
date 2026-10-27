@@ -24,7 +24,7 @@ nav button[aria-selected=true]{color:var(--acc);font-weight:600}
 .card h2{font-size:14px;margin:0 0 8px;color:var(--mut);font-weight:600;letter-spacing:.02em}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
 .kpi b{display:block;font-size:22px}
-.kpi span{color:var(--mut);font-size:12px}
+.kpi>span{color:var(--mut);font-size:12px}
 .chip{display:inline-block;background:var(--chip);border-radius:20px;padding:2px 9px;font-size:11px;margin:2px 4px 2px 0;color:var(--mut)}
 .chip.w{color:var(--warn)}.chip.g{color:var(--acc)}.chip.b{color:var(--bad)}
 table{width:100%;border-collapse:collapse;font-size:13px}
@@ -62,7 +62,7 @@ button.m{background:var(--chip);color:var(--tx);border:0;border-radius:8px;paddi
 
 <script src="vendor/lightweight-charts-4.2.3.js"></script>
 <script>
-const TABS=[["idag","I dag"],["topp","Topp 10"],["lang","Liste"],["syk","Syklisk"],["takt","Taktisk"],["papir","Papir"],["indeks","Indeks"],["plan","Plan"]];
+const TABS=[["idag","I dag"],["test","Test"],["topp","Topp 10"],["lang","Liste"],["syk","Syklisk"],["takt","Taktisk"],["papir","Papir"],["indeks","Indeks"],["plan","Plan"]];
 let D=null,S=null,tab="idag",showAll=false;
 const f=(k,v)=>{try{return JSON.parse(localStorage.getItem(k))??v}catch(e){return v}};
 const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -90,7 +90,7 @@ function render(){
   nav();
   const m=document.getElementById("main");
   if(!D){m.innerHTML=`<div class="card">Ingen data ennå. Start workflowen "daily" under Actions i repoet. Første kjøring tar noen minutter.</div>`;return}
-  m.innerHTML=({idag,topp,lang,syk,takt,papir,indeks,plan}[tab])();
+  m.innerHTML=({idag,test,topp,lang,syk,takt,papir,indeks,plan}[tab])();
   bind();
 }
 function summaryBlock(sm,title){
@@ -160,6 +160,39 @@ function syk(){
   <div class="card"><div class="tw"><table><thead><tr><th>Aksje</th><th>Score</th><th>Snitt-E/P</th><th>B/P</th><th>Gjeld</th><th>12-1</th></tr></thead><tbody>${tr}</tbody></table></div>
   <p class="note">Snitt-E/P: snittresultat de siste årene delt på markedsverdi. B/P: bokført verdi delt på kurs. Gjeld: netto gjeld delt på EBITDA.</p></div>
   ${D.summary.cyc?summaryBlock(D.summary.cyc,"SYKLISK PAPIRBOK"):""}`;
+}
+function test(){
+  const T=D.test;
+  if(!T||!T.summary||!T.history.length)return `<div class="card note">Testporteføljen starter ved neste kjøring. Første kjøp skjer dagen etter.</div>`;
+  const S2=T.summary,col={A:"#5ad1a0",B:"#7aa2f7",C:"#e9b44c"};
+  const card=k=>{const s=S2[k],ex=s.ret!=null&&s.bench_ret!=null?s.ret-s.bench_ret:null;
+    return `<div class="card"><h2><span style="color:${col[k]}">●</span> ${k}. ${esc(s.label).toUpperCase()}</h2><div class="grid">
+    <div class="kpi"><b>${sp(ex)}</b><span>mot indeks (etter kurtasje)</span></div>
+    <div class="kpi"><b>${sp(s.ret)}</b><span>avkastning</span></div>
+    <div class="kpi"><b>${sp(s.bench_ret)}</b><span>samme beløp i indeks</span></div>
+    <div class="kpi"><b>${n0(s.value)} kr</b><span>verdi av ${n0(s.invested)} kr satt inn</span></div>
+    <div class="kpi"><b>${n0(s.fees)} kr</b><span>kurtasje og valuta</span></div>
+    <div class="kpi"><b>${s.open} / ${s.closed}</b><span>åpne / solgte poster</span></div></div></div>`};
+  const lots=(T.lots.A||[]).slice().sort((a,b)=>b.ret-a.ret).map(l=>`<tr><td><b>${esc(l.ticker)}</b> <span class="note">${esc(l.name)}</span></td><td>${l.buy_date}</td><td>${sp(l.ret)}</td></tr>`).join("")||`<tr><td class="note">Ingen ennå.</td></tr>`;
+  return `<div class="card warn"><h2>SLIK LESER DU TESTEN</h2><p class="note">Dag ${S2.days}. Hver handelsdag kjøpes de 5 beste aksjene som oppfyller kravene til kjøpslisten og som porteføljen ikke eier fra før. Er det færre, kjøpes færre. Hver post er på ${n0(T.rules.lot)} kr hver. Kjøp skjer til sluttkurs dagen etter signalet. Posten selges etter ${T.rules.hold_days} dager, eller tidligere hvis aksjen faller ut av øverste 30 prosent. Samme beløp går samme dag inn i indeks. Kurtasje: Nordnet Mini, 29 kr i Norden og 49 kr ellers, pluss 0,25 % for valutaveksling.</p>
+  <p class="note"><b>Det viktige:</b> A må slå både indeks og C over tid. C er tilfeldige aksjer. Slår ikke A tilfeldige valg, har rangeringen ingen verdi. Noen uker sier lite. Se etter et mønster over flere måneder.</p></div>
+  <div class="card"><h2>AVKASTNING MOT INDEKS, PROSENTPOENG</h2><div class="chart" id="tc" style="height:220px"></div>
+  <div class="legend">${["A","B","C"].map(k=>`<span><i style="background:${col[k]}"></i>${k}</span>`).join("")}<span>Over null: slår indeks.</span></div></div>
+  ${["A","B","C"].map(card).join("")}
+  <div class="card"><h2>ÅPNE POSTER I A</h2><div class="tw"><table><thead><tr><th>Aksje</th><th>Kjøpt</th><th>Siden kjøp</th></tr></thead><tbody>${lots}</tbody></table></div>
+  <p class="note">Avkastning per post er etter kjøpskurtasje.</p></div>`;
+}
+function drawTest(){
+  const el=document.getElementById("tc");if(!el||!window.LightweightCharts)return;
+  const cs=getComputedStyle(document.documentElement),V=k=>cs.getPropertyValue(k).trim();
+  const ch=LightweightCharts.createChart(el,{autoSize:true,layout:{background:{color:V("--card")},textColor:V("--mut"),fontSize:11},
+    grid:{vertLines:{color:V("--line")},horzLines:{color:V("--line")}},rightPriceScale:{borderColor:V("--line")},timeScale:{borderColor:V("--line")},handleScroll:false,handleScale:false});
+  charts.push(ch);
+  const col={A:"#5ad1a0",B:"#7aa2f7",C:"#e9b44c"};
+  ["A","B","C"].forEach(k=>{const s=ch.addLineSeries({color:col[k],lineWidth:2,priceLineVisible:false,priceFormat:{type:"custom",formatter:v=>v.toFixed(1)+" pp"}});
+    s.setData(D.test.history.filter(h=>h[k]&&h[k].invested>0).map(h=>({time:h.date,value:(h[k].value-h[k].bench)/h[k].invested*100})));
+    if(k==="A")s.createPriceLine({price:0,color:V("--mut"),lineWidth:1,lineStyle:2,axisLabelVisible:false})});
+  ch.timeScale().fitContent();
 }
 let selT=null,rng=f("rng",126),charts=[];
 function topp(){
@@ -276,11 +309,13 @@ function bind(){
     document.getElementById("more").onclick=()=>{showAll=!showAll;fillLang()};
     fillLang();
   }
-  if(tab==="topp"){
+  if(tab==="test"){charts.forEach(c=>{try{c.remove()}catch(e){}});charts=[];drawTest()}
+  else if(tab==="topp"){
     document.querySelectorAll(".pick button").forEach(b=>b.onclick=()=>{selT=b.dataset.t;render()});
     document.querySelectorAll(".rng button").forEach(b=>b.onclick=()=>{rng=+b.dataset.r;sv("rng",rng);render()});
     drawChart();
   }else{charts.forEach(c=>{try{c.remove()}catch(e){}});charts=[]}
+
   if(tab==="syk"){const s=document.getElementById("sm");s.value=f("sykm","ALL");s.onchange=e=>{sv("sykm",e.target.value);render()}}
   if(tab==="plan"){
     const p=f("plan",{amt:2000,core:80,hold:""});
