@@ -1,0 +1,172 @@
+{
+ "version": 1,
+ "last_date": "2026-10-26",
+ "last_review": "2026-10",
+ "ew": {
+  "NO": {
+   "level": 100.0,
+   "date": "2026-10-23"
+  },
+  "US": {
+   "level": 100.0,
+   "date": "2026-10-26"
+  }
+ },
+ "real": {
+  "US": 7676.77001953125,
+  "NO": 2125.050048828125
+ },
+ "long": {
+  "open": {
+   "MING.OL": {
+    "ticker": "MING.OL",
+    "name": "SpareBank 1 SMN",
+    "market": "NO",
+    "entry_date": "2026-10-26",
+    "entry_price": 212.6999969482422,
+    "entry_ew": 100.0,
+    "entry_real": 2125.050048828125
+   },
+   "ALL": {
+    "ticker": "ALL",
+    "name": "Allstate",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 255.9499969482422,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "MU": {
+    "ticker": "MU",
+    "name": "Micron Technology",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 903.7000122070312,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "SNDK": {
+    "ticker": "SNDK",
+    "name": "Sandisk",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 1255.5799560546875,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "INCY": {
+    "ticker": "INCY",
+    "name": "Incyte",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 113.30999755859375,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "ACGL": {
+    "ticker": "ACGL",
+    "name": "Arch Capital Group",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 102.33999633789062,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "MO": {
+    "ticker": "MO",
+    "name": "Altria",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 73.62000274658203,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "BMY": {
+    "ticker": "BMY",
+    "name": "Bristol Myers Squibb",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 61.61000061035156,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "PNC": {
+    "ticker": "PNC",
+    "name": "PNC Financial Services",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 225.83999633789062,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "CPAY": {
+    "ticker": "CPAY",
+    "name": "Corpay",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 399.7200012207031,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "HST": {
+    "ticker": "HST",
+    "name": "Host Hotels & Resorts",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 25.059999465942383,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "USB": {
+    "ticker": "USB",
+    "name": "U.S. Bancorp",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 59.70000076293945,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "REGN": {
+    "ticker": "REGN",
+    "name": "Regeneron Pharmaceuticals",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 807.6699829101562,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "EXPE": {
+    "ticker": "EXPE",
+    "name": "Expedia Group",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 283.9700012207031,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "PM": {
+    "ticker": "PM",
+    "name": "Philip Morris International",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 201.8699951171875,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   },
+   "HAS": {
+    "ticker": "HAS",
+    "name": "Hasbro",
+    "market": "US",
+    "entry_date": "2026-10-26",
+    "entry_price": 117.95999908447266,
+    "entry_ew": 100.0,
+    "entry_real": 7676.77001953125
+   }
+  },
+  "closed": []
+ },
+ "tact": {
+  "open": {},
+  "closed": []
+ }
+}
