@@ -52,6 +52,10 @@ def price_stats(hist: pd.DataFrame, now=None):
         ret_12_1 = float(closes.iloc[-21] / closes.iloc[-252] - 1)
     ret_1m = float(closes.iloc[-1] / closes.iloc[-22] - 1) if len(closes) > 22 else None
     recent = {d.strftime("%Y-%m-%d"): float(v) for d, v in closes.iloc[-15:].items()}
+    turnover = None
+    if "Volume" in hist:
+        tv = (hist["Close"] * hist["Volume"]).loc[closes.index].iloc[-20:]
+        turnover = float(tv.mean()) if len(tv) else None
     return {
         "date": closes.index[-1].strftime("%Y-%m-%d"),
         "price": price,
@@ -63,6 +67,7 @@ def price_stats(hist: pd.DataFrame, now=None):
         "ret_1m": ret_1m,
         "rsi": rsi14(closes),
         "recent": recent,
+        "turnover": turnover,
     }
 
 
@@ -76,6 +81,7 @@ def build_record(ticker, info, hist):
     rec = price_stats(hist)
     rec.update({
         "ticker": ticker,
+        "yname": info.get("shortName") or info.get("longName"),
         "sector": info.get("sector"),
         "industry": info.get("industry"),
         "ccy": info.get("currency"),
@@ -176,3 +182,20 @@ def mark_stale(recs, max_days=7):
         out.append({"ticker": r["ticker"], "market": r["market"], "name": r.get("name"),
                     "error": f"foreldet kurs ({r['date']})"} if lag > max_days else r)
     return out
+
+
+def fetch_ohlc(ticker, retries=3):
+    """Daglige candles for graf-fanen. Siste ufullstendige dag tas bort."""
+    last = None
+    for i in range(retries):
+        try:
+            df = yf.Ticker(ticker).history(period="2y", auto_adjust=True)
+            if df is None or df.empty:
+                raise ValueError("ingen kursdata")
+            df = df[["Open", "High", "Low", "Close", "Volume"]]
+            keep = drop_intraday(df["Close"])
+            return df.loc[keep.index]
+        except Exception as e:  # noqa: BLE001
+            last = e
+            time.sleep(2 * (2 ** i))
+    raise RuntimeError(str(last))

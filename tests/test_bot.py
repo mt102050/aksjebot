@@ -283,3 +283,42 @@ def test_universe_files_are_not_empty():
     from bot import universe
     assert len(universe.europe()) > 200
     assert len(universe.OSLO) > 50
+
+
+def _ohlc(n=400, drift=0.001, wave=0.0, seed=1):
+    import math
+    import numpy as np
+    import pandas as pd
+    rng = np.random.default_rng(seed)
+    idx = pd.bdate_range("2025-01-01", periods=n)
+    c = 100 * np.exp(np.cumsum(drift + rng.normal(0, 0.005, n))) * (1 + wave * np.sin(np.arange(n) / 8))
+    o = np.r_[c[0], c[:-1]]
+    h = np.maximum(o, c) * 1.005
+    lo = np.minimum(o, c) * 0.995
+    return pd.DataFrame({"Open": o, "High": h, "Low": lo, "Close": c, "Volume": rng.integers(1e5, 2e5, n)}, index=idx)
+
+
+def test_technical_trend_and_shapes():
+    from bot import technical
+    up = technical.analyse(_ohlc(drift=0.002))
+    assert up["summary"]["trend"] == "opptrend"
+    assert len(up["t"]) == len(up["c"]) == len(up["ma200"]) == 260
+    down = technical.analyse(_ohlc(drift=-0.002))
+    assert down["summary"]["trend"] == "nedtrend"
+
+
+def test_support_below_and_resistance_above_price():
+    from bot import technical
+    a = technical.analyse(_ohlc(drift=0.0, wave=0.08))
+    s = a["summary"]
+    assert all(x["price"] < s["price"] for x in s["support"])
+    assert all(x["price"] > s["price"] for x in s["resistance"])
+    assert s["support"] or s["resistance"]
+
+
+def test_chart_json_is_valid():
+    import json
+    from bot import run, technical
+    txt = run.dump(technical.analyse(_ohlc()))
+    assert "NaN" not in txt
+    assert json.loads(txt)["summary"]["notes"]

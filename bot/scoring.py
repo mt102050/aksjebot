@@ -1,7 +1,7 @@
 """Rangering: verdi, kvalitet og momentum. Rent regnestykke uten nettverk, så alt kan testes."""
 import pandas as pd
 
-from .universe import MIN_MCAP
+from .universe import MIN_MCAP, MIN_TURNOVER
 
 W_VALUE, W_QUALITY, W_MOM = 0.40, 0.35, 0.25
 CYCLICAL_SECTORS = {"Energy", "Basic Materials"}
@@ -105,6 +105,10 @@ def score_universe(records, fx=None):
             continue
         if r.get("mcap") is None or r["mcap"] < MIN_MCAP.get(r["market"], 1e9):
             dropped.append({"ticker": r["ticker"], "reason": "for lav markedsverdi eller mangler"})
+            continue
+        need = MIN_TURNOVER.get(r["market"])
+        if need and (r.get("turnover") or 0) < need:
+            dropped.append({"ticker": r["ticker"], "reason": "for lav omsetning"})
             continue
         row = dict(r)
         row["fin"] = is_financial(r)

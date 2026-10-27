@@ -27,3 +27,11 @@ Dette er et analyseverktøy, ikke investeringsråd. Papirhandel inkluderer ikke 
 - Papirboken har overlevelsesskjevhet bare hvis listen over aksjer endres. Hold listen stabil.
 - GitHub kan stoppe planlagte kjøringer i offentlige repoer uten aktivitet i 60 dager. Daglige commits holder det i gang, men sjekk Actions hvis varslene uteblir.
 - Under 30 lukkede papirhandler sier resultatene nesten ingenting.
+
+## Grafer
+
+Fanen Topp 10 viser candlestick-graf og teknisk analyse for de 10 høyest rangerte på kjøpslisten. Grafbiblioteket er TradingView Lightweight Charts 4.2.3 (Apache 2.0), lagt i `docs/vendor`. Teknisk analyse beskriver kursen og gir ingen kjøpssignal.
+
+## Oslo Børs
+
+`bot/universe_oslo.csv` dekker hele børsen. Aksjer med under 2 MNOK snittomsetning per dag eller under 500 MNOK markedsverdi tas ikke med, fordi spreaden blir for stor.

@@ -17,7 +17,7 @@ header{padding:14px 16px 6px;display:flex;justify-content:space-between;align-it
 h1{font-size:18px;margin:0}
 .sub{color:var(--mut);font-size:12px}
 main{padding:0 16px;max-width:980px;margin:0 auto}
-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;overflow-x:auto;padding-bottom:env(safe-area-inset-bottom);z-index:5}
 nav button{flex:1;background:none;border:0;color:var(--mut);padding:12px 1px;font:inherit;font-size:11px;cursor:pointer;min-width:0}
 nav button[aria-selected=true]{color:var(--acc);font-weight:600}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
@@ -42,6 +42,14 @@ textarea{width:100%;min-height:90px}
 label.t{display:flex;align-items:center;gap:6px;color:var(--mut);font-size:13px}
 .note{color:var(--mut);font-size:13px}
 .warn{border-color:var(--warn)}
+.chart{height:300px;margin:6px -6px 0}.rsi{height:100px;margin:0 -6px}
+.pick{display:flex;gap:6px;overflow-x:auto;padding:4px 0 2px}
+.pick button{flex:none;background:var(--chip);color:var(--tx);border:1px solid transparent;border-radius:20px;padding:6px 11px;font:inherit;font-size:13px;cursor:pointer}
+.pick button[aria-pressed=true]{border-color:var(--acc);color:var(--acc)}
+.rng{display:flex;gap:6px;margin-top:8px}.rng button{background:none;border:1px solid var(--line);color:var(--mut);border-radius:6px;padding:3px 9px;font:inherit;font-size:12px;cursor:pointer}
+.rng button[aria-pressed=true]{color:var(--tx);border-color:var(--mut)}
+ul.n{margin:6px 0 0;padding-left:18px}ul.n li{margin:3px 0}
+.legend{font-size:11px;color:var(--mut);display:flex;gap:12px;flex-wrap:wrap;margin-top:4px}.legend i{display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:4px}
 .det td{background:var(--chip);text-align:left;font-size:12px;color:var(--mut)}
 button.m{background:var(--chip);color:var(--tx);border:0;border-radius:8px;padding:8px 12px;font:inherit;cursor:pointer}
 [hidden]{display:none!important}
@@ -52,8 +60,9 @@ button.m{background:var(--chip);color:var(--tx);border:0;border-radius:8px;paddi
 <main id="main"></main>
 <nav id="nav"></nav>
 
+<script src="vendor/lightweight-charts-4.2.3.js"></script>
 <script>
-const TABS=[["idag","I dag"],["lang","Langsiktig"],["syk","Syklisk"],["takt","Taktisk"],["papir","Papir"],["indeks","Indekser"],["plan","Plan"]];
+const TABS=[["idag","I dag"],["topp","Topp 10"],["lang","Liste"],["syk","Syklisk"],["takt","Taktisk"],["papir","Papir"],["indeks","Indeks"],["plan","Plan"]];
 let D=null,S=null,tab="idag",showAll=false;
 const f=(k,v)=>{try{return JSON.parse(localStorage.getItem(k))??v}catch(e){return v}};
 const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -81,7 +90,7 @@ function render(){
   nav();
   const m=document.getElementById("main");
   if(!D){m.innerHTML=`<div class="card">Ingen data ennå. Start workflowen "daily" under Actions i repoet. Første kjøring tar noen minutter.</div>`;return}
-  m.innerHTML=({idag,lang,syk,takt,papir,indeks,plan}[tab])();
+  m.innerHTML=({idag,topp,lang,syk,takt,papir,indeks,plan}[tab])();
   bind();
 }
 function summaryBlock(sm,title){
@@ -152,6 +161,65 @@ function syk(){
   <p class="note">Snitt-E/P: snittresultat de siste årene delt på markedsverdi. B/P: bokført verdi delt på kurs. Gjeld: netto gjeld delt på EBITDA.</p></div>
   ${D.summary.cyc?summaryBlock(D.summary.cyc,"SYKLISK PAPIRBOK"):""}`;
 }
+let selT=null,rng=f("rng",126),charts=[];
+function topp(){
+  const T=D.top10||[];
+  if(!T.length)return `<div class="card note">Ingen grafer ennå. De lages for de 10 høyest rangerte på kjøpslisten ved neste kjøring.</div>`;
+  if(!T.find(x=>x.ticker===selT))selT=T[0].ticker;
+  const it=T.find(x=>x.ticker===selT),s=it.summary,r=D.rows.find(x=>x.ticker===selT)||{m:{},flags:[]},m=r.m||{};
+  const lv=(a,lab)=>a.length?a.map(x=>`${n0(x.price)} <span class="note">(${(x.price/s.price*100-100).toFixed(1).replace(".",",")} %, ${x.touches} berøring${x.touches>1?"er":""})</span>`).join("<br>"):`<span class="note">ingen tydelig</span>`;
+  const tc={opptrend:"g",nedtrend:"b",blandet:"w"}[s.trend];
+  return `<div class="pick">${T.map((x,i)=>`<button aria-pressed="${x.ticker===selT}" data-t="${esc(x.ticker)}">${i+1}. ${esc(x.ticker)}</button>`).join("")}</div>
+  <div class="card"><h2>${esc(it.name)} · ${MK[it.market]||""}</h2>
+  <div><b style="font-size:22px">${n0(s.price)}</b> <span class="chip ${tc}">${s.trend}</span>${askChip(r)}<span class="chip">score ${it.pct.toFixed(0)}</span></div>
+  <div class="rng">${[[63,"3M"],[126,"6M"],[260,"1Å"]].map(([n,l])=>`<button data-r="${n}" aria-pressed="${n==rng}">${l}</button>`).join("")}</div>
+  <div class="chart" id="ch"></div>
+  <div class="legend"><span><i style="background:#e9b44c"></i>50-dagers snitt</span><span><i style="background:#7aa2f7"></i>200-dagers snitt</span><span><i style="background:var(--acc)"></i>støtte</span><span><i style="background:var(--bad)"></i>motstand</span></div>
+  <div class="rsi" id="rs"></div><div class="legend"><span>RSI (14). Over 70: rask stigning. Under 30: raskt fall.</span></div></div>
+  <div class="card"><h2>HVA GRAFEN VISER</h2><ul class="n">${s.notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  <div class="grid" style="margin-top:12px">
+  <div class="kpi"><b style="font-size:15px">${lv(s.support)}</b><span>støtte</span></div><div class="kpi"><b style="font-size:15px">${lv(s.resistance)}</b><span>motstand</span></div>
+  <div class="kpi"><b>${String(s.rsi).replace(".",",")}</b><span>RSI</span></div><div class="kpi"><b>${pc(s.atr_pct)}</b><span>vanlig dagsbevegelse (ATR)</span></div>
+  <div class="kpi"><b>${sp(s.dd52)}</b><span>fra 52-ukers topp</span></div><div class="kpi"><b>${s.vol_ratio==null?"–":String(s.vol_ratio).replace(".",",")}</b><span>volum siste uke mot normalt</span></div></div>
+  <p class="note">Teknisk analyse beskriver kursen. Den forutsier den ikke. Bruk støtte og ATR til å sette et fornuftig kjøpsnivå og en grense for tap, ikke som grunn til å kjøpe.</p></div>
+  <div class="card"><h2>HVORFOR DEN ER PÅ LISTEN</h2><div class="grid">
+  <div class="kpi"><b>${r.value?.toFixed(0)??"–"}</b><span>verdi (0 til 100)</span></div><div class="kpi"><b>${r.quality?.toFixed(0)??"–"}</b><span>kvalitet</span></div>
+  <div class="kpi"><b>${r.mom?.toFixed(0)??"–"}</b><span>momentum</span></div><div class="kpi"><b>${r.pe?n0(r.pe):"–"}</b><span>P/E</span></div>
+  <div class="kpi"><b>${pc(m.fcfy)}</b><span>fri kontantstrøm / markedsverdi</span></div><div class="kpi"><b>${pc(m.roe)}</b><span>avkastning på egenkapital</span></div>
+  <div class="kpi"><b>${pc(m.opm)}</b><span>driftsmargin</span></div><div class="kpi"><b>${esc(r.sector||"–")}</b><span>sektor</span></div></div>
+  ${(r.flags||[]).map(x=>`<span class="chip w">${esc(x)}</span>`).join("")}</div>
+  <div class="card"><h2>SJEKK SELV FØR DU KJØPER</h2><ul class="n"><li>Les siste kvartalsrapport. Hvorfor er aksjen billig? Ett engangstap, eller varig svakere drift?</li><li>Se nyheter siste måned, særlig hvis volumet er høyt.</li><li>Sjekk at aksjen kan ligge på kontoen du vil bruke.</li><li>Bestem på forhånd hvor mye du kjøper for, og når du selger.</li></ul></div>`;
+}
+async function drawChart(){
+  charts.forEach(c=>{try{c.remove()}catch(e){}});charts=[];
+  const it=(D.top10||[]).find(x=>x.ticker===selT);const el=document.getElementById("ch");
+  if(!it||!el)return;
+  if(!window.LightweightCharts){el.innerHTML='<p class="note">Grafbiblioteket lastet ikke.</p>';return}
+  let a;try{a=await (await fetch("data/"+it.file,{cache:"no-store"})).json()}catch(e){el.innerHTML='<p class="note">Fant ikke grafdata.</p>';return}
+  if(selT!==it.ticker||!document.getElementById("ch"))return;
+  const cs=getComputedStyle(document.documentElement),V=k=>cs.getPropertyValue(k).trim();
+  const opt={autoSize:true,layout:{background:{color:V("--card")},textColor:V("--mut"),fontSize:11},grid:{vertLines:{color:V("--line")},horzLines:{color:V("--line")}},
+    rightPriceScale:{borderColor:V("--line")},timeScale:{borderColor:V("--line")},crosshair:{mode:0},handleScroll:true,handleScale:true};
+  const ch=LightweightCharts.createChart(el,opt);charts.push(ch);
+  const up=V("--acc"),dn=V("--bad");
+  const c=ch.addCandlestickSeries({upColor:up,downColor:dn,borderVisible:false,wickUpColor:up,wickDownColor:dn});
+  c.setData(a.t.map((t,i)=>({time:t,open:a.o[i],high:a.h[i],low:a.l[i],close:a.c[i]})).filter(x=>x.close!=null));
+  if(a.v.length){const v=ch.addHistogramSeries({priceFormat:{type:"volume"},priceScaleId:"",lastValueVisible:false,priceLineVisible:false});
+    ch.priceScale("").applyOptions({scaleMargins:{top:0.82,bottom:0}});
+    v.setData(a.t.map((t,i)=>({time:t,value:a.v[i]||0,color:(a.c[i]>=a.o[i]?up:dn)+"55"})))}
+  const line=(k,col)=>{const s=ch.addLineSeries({color:col,lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});
+    s.setData(a.t.map((t,i)=>({time:t,value:a[k][i]})).filter(x=>x.value!=null))};
+  line("ma50","#e9b44c");line("ma200","#7aa2f7");
+  a.summary.support.forEach(x=>c.createPriceLine({price:x.price,color:up,lineWidth:1,lineStyle:2,axisLabelVisible:true,title:"støtte"}));
+  a.summary.resistance.forEach(x=>c.createPriceLine({price:x.price,color:dn,lineWidth:1,lineStyle:2,axisLabelVisible:true,title:"motstand"}));
+  const n=a.t.length;ch.timeScale().setVisibleLogicalRange({from:Math.max(0,n-rng),to:n+2});
+  const rc=LightweightCharts.createChart(document.getElementById("rs"),{...opt,timeScale:{...opt.timeScale,visible:false}});charts.push(rc);
+  const rs=rc.addLineSeries({color:V("--tx"),lineWidth:1,priceLineVisible:false});
+  rs.setData(a.t.map((t,i)=>({time:t,value:a.rsi[i]})).filter(x=>x.value!=null));
+  [70,30].forEach(p=>rs.createPriceLine({price:p,color:V("--mut"),lineWidth:1,lineStyle:2,axisLabelVisible:false}));
+  rc.timeScale().setVisibleLogicalRange({from:Math.max(0,n-rng),to:n+2});
+  ch.timeScale().subscribeVisibleLogicalRangeChange(r=>{if(r)rc.timeScale().setVisibleLogicalRange(r)});
+}
 function cur(t){const r=D.rows.find(x=>x.ticker===t);return r?r.price:null}
 function takt(){
   const sig=D.tactical.map(s=>`<tr><td><b>${esc(s.ticker)}</b> <span class="note">${esc(s.name)}</span></td><td>${esc(s.kind)}</td><td>${n0(s.price)}</td></tr>`).join("")||`<tr><td colspan="3" class="note">Ingen signaler i dag.</td></tr>`;
@@ -208,6 +276,11 @@ function bind(){
     document.getElementById("more").onclick=()=>{showAll=!showAll;fillLang()};
     fillLang();
   }
+  if(tab==="topp"){
+    document.querySelectorAll(".pick button").forEach(b=>b.onclick=()=>{selT=b.dataset.t;render()});
+    document.querySelectorAll(".rng button").forEach(b=>b.onclick=()=>{rng=+b.dataset.r;sv("rng",rng);render()});
+    drawChart();
+  }else{charts.forEach(c=>{try{c.remove()}catch(e){}});charts=[]}
   if(tab==="syk"){const s=document.getElementById("sm");s.value=f("sykm","ALL");s.onchange=e=>{sv("sykm",e.target.value);render()}}
   if(tab==="plan"){
     const p=f("plan",{amt:2000,core:80,hold:""});

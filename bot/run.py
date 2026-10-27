@@ -5,10 +5,10 @@ import math
 import pathlib
 import sys
 
-from . import data, notify, paper, scoring, universe
+from . import data, notify, paper, scoring, technical, universe
 
 OUT = pathlib.Path("docs/data")
-MIN_COVERAGE = {"US": 0.80, "NO": 0.55, "EU": 0.60}
+MIN_COVERAGE = {"US": 0.80, "NO": 0.30, "EU": 0.60}  # NO lav midlertidig: ny Oslo-liste ryddes etter første kjøring
 
 
 def clean(x):
@@ -72,6 +72,38 @@ def index_rows(recs):
     return out
 
 
+CHARTS = OUT / "charts"
+TOP_N = 10
+
+
+def safe(t):
+    return "".join(c if c.isalnum() or c in "-_" else "_" for c in t)
+
+
+def build_charts(state, rows):
+    """Graf og teknisk analyse for de 10 høyest rangerte på kjøpslisten. Gamle filer slettes."""
+    CHARTS.mkdir(parents=True, exist_ok=True)
+    by_t = {r["ticker"]: r for r in rows}
+    book = [by_t[t] for t in state["long"]["open"] if t in by_t]
+    top = sorted(book, key=lambda r: -r["pct"])[:TOP_N]
+    out, keep = [], set()
+    for r in top:
+        try:
+            a = technical.analyse(data.fetch_ohlc(r["ticker"]))
+        except Exception as e:  # noqa: BLE001 - én feil graf skal ikke stoppe rapporten
+            print("graf feilet", r["ticker"], type(e).__name__)
+            continue
+        f = safe(r["ticker"]) + ".json"
+        keep.add(f)
+        (CHARTS / f).write_text(dump(a, separators=(",", ":")))
+        out.append({"ticker": r["ticker"], "name": r["name"], "market": r["market"], "file": "charts/" + f,
+                    "pct": round(r["pct"], 1), "summary": a["summary"]})
+    for old in CHARTS.glob("*.json"):
+        if old.name not in keep:
+            old.unlink()
+    return out
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     state = load_state()
@@ -82,10 +114,10 @@ def main():
     recs = data.fetch_all([u["ticker"] for u in uni])
     bad = [r["ticker"] for r in recs if "error" in r]
     if bad:  # Yahoo stryper ofte tempoet. Ny runde, sakte og én om gangen.
-        again = {r["ticker"]: r for r in data.fetch_all(bad, workers=1, pause=4.0, sleep=1.0)}
+        again = {r["ticker"]: r for r in data.fetch_all(bad[:40], workers=2, pause=2.0, sleep=1.0)}
         recs = [again.get(r["ticker"], r) if "error" in r else r for r in recs]
     for r in recs:
-        r.update({"name": meta[r["ticker"]]["name"], "market": meta[r["ticker"]]["market"]})
+        r.update({"name": r.get("yname") or meta[r["ticker"]]["name"], "market": meta[r["ticker"]]["market"]})
     recs = data.mark_stale(recs)
     pairs = {(r["fin_ccy"], r["ccy"]) for r in recs if "error" not in r and r.get("fin_ccy") and r.get("ccy")
              and r["fin_ccy"] != r["ccy"] and len(r["fin_ccy"]) == 3 and len(r["ccy"]) == 3
@@ -146,6 +178,7 @@ def main():
     else:
         warnings_page = []
 
+    top10 = build_charts(state, rows)
     out = {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "as_of": as_of,
@@ -157,6 +190,7 @@ def main():
         "dropped": dropped[:400],
         "rows": [slim(r, r["ticker"] in in_book, r["ticker"] in in_cyc) for r in sorted(rows, key=lambda x: -x["pct"])],
         "tactical": tact,
+        "top10": top10,
         "indices": index_rows(idx),
         "events": events,
         "summary": {"long": paper.summary(state["long"]["closed"]), "tact": paper.summary(state["tact"]["closed"]),
