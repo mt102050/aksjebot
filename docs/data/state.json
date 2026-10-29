@@ -1,25 +1,25 @@
 {
  "version": 1,
- "last_date": "2026-10-27",
+ "last_date": "2026-10-28",
  "last_review": "2026-10",
  "ew": {
   "NO": {
-   "level": 101.59620596461119,
-   "date": "2026-10-26"
-  },
-  "US": {
-   "level": 100.16078177527676,
+   "level": 102.2188451596357,
    "date": "2026-10-27"
   },
+  "US": {
+   "level": 100.14211703232526,
+   "date": "2026-10-28"
+  },
   "EU": {
-   "level": 100.0,
-   "date": "2026-10-26"
+   "level": 100.66486502909382,
+   "date": "2026-10-27"
   }
  },
  "real": {
-  "US": 7722.60009765625,
-  "NO": 2126.429931640625,
-  "EU": 643.6799926757812
+  "US": 7743.97998046875,
+  "NO": 2129.219970703125,
+  "EU": 644.1400146484375
  },
  "long": {
   "open": {
@@ -31,7 +31,7 @@
     "entry_price": 212.6999969482422,
     "entry_ew": 100.0,
     "entry_real": 2125.050048828125,
-    "last_price": 216.6999969482422
+    "last_price": 220.75
    },
    "ALL": {
     "ticker": "ALL",
@@ -41,7 +41,7 @@
     "entry_price": 255.9499969482422,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 251.7100067138672
+    "last_price": 250.1999969482422
    },
    "MU": {
     "ticker": "MU",
@@ -51,7 +51,7 @@
     "entry_price": 903.7000122070312,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 928.760009765625
+    "last_price": 983.22998046875
    },
    "SNDK": {
     "ticker": "SNDK",
@@ -61,7 +61,7 @@
     "entry_price": 1255.5799560546875,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 1304.8399658203125
+    "last_price": 1404.77001953125
    },
    "INCY": {
     "ticker": "INCY",
@@ -71,7 +71,7 @@
     "entry_price": 113.30999755859375,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 116.5999984741211
+    "last_price": 116.87000274658203
    },
    "ACGL": {
     "ticker": "ACGL",
@@ -81,7 +81,7 @@
     "entry_price": 102.33999633789062,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 100.33999633789062
+    "last_price": 102.5
    },
    "MO": {
     "ticker": "MO",
@@ -91,7 +91,7 @@
     "entry_price": 73.62000274658203,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 73.48999786376953
+    "last_price": 72.98999786376953
    },
    "BMY": {
     "ticker": "BMY",
@@ -101,7 +101,7 @@
     "entry_price": 61.61000061035156,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 61.54999923706055
+    "last_price": 60.56999969482422
    },
    "PNC": {
     "ticker": "PNC",
@@ -111,7 +111,7 @@
     "entry_price": 225.83999633789062,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 227.5399932861328
+    "last_price": 228.25
    },
    "CPAY": {
     "ticker": "CPAY",
@@ -121,7 +121,7 @@
     "entry_price": 399.7200012207031,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 397.0199890136719
+    "last_price": 395.8599853515625
    },
    "HST": {
     "ticker": "HST",
@@ -131,7 +131,7 @@
     "entry_price": 25.059999465942383,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 25.219999313354492
+    "last_price": 25.270000457763672
    },
    "USB": {
     "ticker": "USB",
@@ -141,7 +141,7 @@
     "entry_price": 59.70000076293945,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 59.7400016784668
+    "last_price": 59.599998474121094
    },
    "REGN": {
     "ticker": "REGN",
@@ -151,7 +151,7 @@
     "entry_price": 807.6699829101562,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 816.0999755859375
+    "last_price": 813.27001953125
    },
    "EXPE": {
     "ticker": "EXPE",
@@ -161,7 +161,7 @@
     "entry_price": 283.9700012207031,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 278.0799865722656
+    "last_price": 275.5299987792969
    },
    "PM": {
     "ticker": "PM",
@@ -171,7 +171,7 @@
     "entry_price": 201.8699951171875,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 202.6199951171875
+    "last_price": 202.63999938964844
    },
    "HAS": {
     "ticker": "HAS",
@@ -181,7 +181,7 @@
     "entry_price": 117.95999908447266,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 118.33000183105469
+    "last_price": 118.68000030517578
    },
    "INDU-C.ST": {
     "ticker": "INDU-C.ST",
@@ -191,7 +191,7 @@
     "entry_price": 510.79998779296875,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 510.79998779296875
+    "last_price": 516.4000244140625
    },
    "BMPS.MI": {
     "ticker": "BMPS.MI",
@@ -201,7 +201,7 @@
     "entry_price": 10.87399959564209,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 10.87399959564209
+    "last_price": 10.954000473022461
    },
    "EVO.ST": {
     "ticker": "EVO.ST",
@@ -211,7 +211,7 @@
     "entry_price": 837.0,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 837.0
+    "last_price": 828.4000244140625
    },
    "LOG.MC": {
     "ticker": "LOG.MC",
@@ -231,7 +231,7 @@
     "entry_price": 43.849998474121094,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 43.849998474121094
+    "last_price": 44.18000030517578
    },
    "AENA.MC": {
     "ticker": "AENA.MC",
@@ -241,7 +241,7 @@
     "entry_price": 26.6200008392334,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 26.6200008392334
+    "last_price": 27.0
    },
    "ABI.BR": {
     "ticker": "ABI.BR",
@@ -251,7 +251,7 @@
     "entry_price": 73.5999984741211,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 73.5999984741211
+    "last_price": 73.22000122070312
    },
    "IAG.MC": {
     "ticker": "IAG.MC",
@@ -261,7 +261,7 @@
     "entry_price": 4.9079999923706055,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 4.9079999923706055
+    "last_price": 4.881999969482422
    },
    "PNDORA.CO": {
     "ticker": "PNDORA.CO",
@@ -271,7 +271,7 @@
     "entry_price": 838.4000244140625,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 838.4000244140625
+    "last_price": 819.2000122070312
    },
    "SOF.BR": {
     "ticker": "SOF.BR",
@@ -281,7 +281,7 @@
     "entry_price": 269.6000061035156,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 269.6000061035156
+    "last_price": 272.20001220703125
    },
    "ORNBV.HE": {
     "ticker": "ORNBV.HE",
@@ -291,7 +291,7 @@
     "entry_price": 96.3499984741211,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 96.3499984741211
+    "last_price": 95.75
    }
   },
   "closed": []
@@ -306,7 +306,8 @@
     "entry_price": 96.3499984741211,
     "entry_ew": 100.0,
     "entry_real": 643.6799926757812,
-    "kind": "ny 52-ukers topp"
+    "kind": "ny 52-ukers topp",
+    "last_price": 95.75
    },
    "MEDI.OL": {
     "ticker": "MEDI.OL",
@@ -316,7 +317,8 @@
     "entry_price": 305.5,
     "entry_ew": 101.59620596461119,
     "entry_real": 2126.429931640625,
-    "kind": "ny 52-ukers topp"
+    "kind": "ny 52-ukers topp",
+    "last_price": 306.0
    },
    "AAPL": {
     "ticker": "AAPL",
@@ -326,7 +328,8 @@
     "entry_price": 347.1000061035156,
     "entry_ew": 100.16078177527676,
     "entry_real": 7722.60009765625,
-    "kind": "ny 52-ukers topp"
+    "kind": "ny 52-ukers topp",
+    "last_price": 343.8299865722656
    },
    "DSY.PA": {
     "ticker": "DSY.PA",
@@ -336,7 +339,8 @@
     "entry_price": 24.549999237060547,
     "entry_ew": 100.0,
     "entry_real": 643.6799926757812,
-    "kind": "ny 52-ukers topp"
+    "kind": "ny 52-ukers topp",
+    "last_price": 24.690000534057617
    },
    "NDAQ": {
     "ticker": "NDAQ",
@@ -346,7 +350,38 @@
     "entry_price": 104.36000061035156,
     "entry_ew": 100.16078177527676,
     "entry_real": 7722.60009765625,
+    "kind": "ny 52-ukers topp",
+    "last_price": 105.55000305175781
+   },
+   "INVE-B.ST": {
+    "ticker": "INVE-B.ST",
+    "name": "Investor AB ser. B",
+    "market": "EU",
+    "entry_date": "2026-10-28",
+    "entry_price": 423.54998779296875,
+    "entry_ew": 100.66486502909382,
+    "entry_real": 644.1400146484375,
     "kind": "ny 52-ukers topp"
+   },
+   "NONG.OL": {
+    "ticker": "NONG.OL",
+    "name": "SPAREBANK 1 NORD-NORGE",
+    "market": "NO",
+    "entry_date": "2026-10-28",
+    "entry_price": 178.1999969482422,
+    "entry_ew": 102.2188451596357,
+    "entry_real": 2129.219970703125,
+    "kind": "ny 52-ukers topp"
+   },
+   "FFIV": {
+    "ticker": "FFIV",
+    "name": "F5, Inc.",
+    "market": "US",
+    "entry_date": "2026-10-28",
+    "entry_price": 365.5299987792969,
+    "entry_ew": 100.14211703232526,
+    "entry_real": 7743.97998046875,
+    "kind": "tilbakegang i opptrend"
    }
   },
   "closed": []
@@ -361,7 +396,7 @@
     "entry_price": 882.0,
     "entry_ew": 101.59620596461119,
     "entry_real": 2125.050048828125,
-    "last_price": 882.0
+    "last_price": 879.0
    },
    "APA": {
     "ticker": "APA",
@@ -371,7 +406,7 @@
     "entry_price": 51.65999984741211,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 50.790000915527344
+    "last_price": 51.11000061035156
    },
    "MPCC.OL": {
     "ticker": "MPCC.OL",
@@ -391,7 +426,7 @@
     "entry_price": 23790.0,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 23790.0
+    "last_price": 23510.0
    },
    "DVN": {
     "ticker": "DVN",
@@ -401,7 +436,7 @@
     "entry_price": 51.63999938964844,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 51.22999954223633
+    "last_price": 51.27000045776367
    },
    "OXY": {
     "ticker": "OXY",
@@ -411,7 +446,7 @@
     "entry_price": 64.06999969482422,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 62.72999954223633
+    "last_price": 62.86000061035156
    },
    "REP.MC": {
     "ticker": "REP.MC",
@@ -421,7 +456,7 @@
     "entry_price": 29.450000762939453,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 29.450000762939453
+    "last_price": 28.479999542236328
    },
    "EOG": {
     "ticker": "EOG",
@@ -431,7 +466,7 @@
     "entry_price": 163.67999267578125,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 161.10000610351562
+    "last_price": 160.9199981689453
    },
    "CF": {
     "ticker": "CF",
@@ -441,7 +476,7 @@
     "entry_price": 120.83999633789062,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 120.54000091552734
+    "last_price": 119.91999816894531
    },
    "HAUTO.OL": {
     "ticker": "HAUTO.OL",
@@ -451,7 +486,7 @@
     "entry_price": 184.0,
     "entry_ew": 101.59620596461119,
     "entry_real": 2125.050048828125,
-    "last_price": 184.0
+    "last_price": 183.10000610351562
    },
    "NUE": {
     "ticker": "NUE",
@@ -461,7 +496,7 @@
     "entry_price": 257.3500061035156,
     "entry_ew": 100.0,
     "entry_real": 7676.77001953125,
-    "last_price": 270.7900085449219
+    "last_price": 271.7900085449219
    },
    "ODF.OL": {
     "ticker": "ODF.OL",
@@ -471,7 +506,7 @@
     "entry_price": 124.19999694824219,
     "entry_ew": 101.59620596461119,
     "entry_real": 2125.050048828125,
-    "last_price": 124.19999694824219
+    "last_price": 124.0
    },
    "TEN.MI": {
     "ticker": "TEN.MI",
@@ -481,7 +516,7 @@
     "entry_price": 26.6200008392334,
     "entry_ew": 100.0,
     "entry_real": 640.6599731445312,
-    "last_price": 26.6200008392334
+    "last_price": 26.84000015258789
    }
   },
   "closed": []
@@ -499,112 +534,112 @@
   ]
  },
  "test": {
-  "last_date": "2026-10-27",
+  "last_date": "2026-10-28",
   "pending": [
    {
     "port": "A",
     "side": "buy",
-    "ticker": "ELE.MC",
+    "ticker": "PUB.PA",
     "market": "EU",
-    "signal": "2026-10-27"
+    "signal": "2026-10-28"
    },
    {
     "port": "A",
     "side": "buy",
-    "ticker": "INVE-B.ST",
-    "market": "EU",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "A",
-    "side": "buy",
-    "ticker": "AENA.MC",
-    "market": "EU",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "A",
-    "side": "buy",
-    "ticker": "ABI.BR",
-    "market": "EU",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "A",
-    "side": "buy",
-    "ticker": "IAG.MC",
-    "market": "EU",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "B",
-    "side": "buy",
-    "ticker": "INCY",
-    "market": "US",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "B",
-    "side": "buy",
-    "ticker": "ACGL",
-    "market": "US",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "B",
-    "side": "buy",
-    "ticker": "MO",
-    "market": "US",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "B",
-    "side": "buy",
-    "ticker": "BMY",
-    "market": "US",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "B",
-    "side": "buy",
-    "ticker": "BMPS.MI",
-    "market": "EU",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "C",
-    "side": "buy",
-    "ticker": "COL.MC",
-    "market": "EU",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "C",
-    "side": "buy",
-    "ticker": "MONC.MI",
-    "market": "EU",
-    "signal": "2026-10-27"
-   },
-   {
-    "port": "C",
-    "side": "buy",
-    "ticker": "AFK.OL",
+    "ticker": "MING.OL",
     "market": "NO",
-    "signal": "2026-10-27"
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "A",
+    "side": "buy",
+    "ticker": "PNDORA.CO",
+    "market": "EU",
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "A",
+    "side": "buy",
+    "ticker": "ORNBV.HE",
+    "market": "EU",
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "A",
+    "side": "buy",
+    "ticker": "PST.MI",
+    "market": "EU",
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "B",
+    "side": "buy",
+    "ticker": "USB",
+    "market": "US",
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "B",
+    "side": "buy",
+    "ticker": "EVO.ST",
+    "market": "EU",
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "B",
+    "side": "buy",
+    "ticker": "PNC",
+    "market": "US",
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "B",
+    "side": "buy",
+    "ticker": "LOG.MC",
+    "market": "EU",
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "B",
+    "side": "buy",
+    "ticker": "HST",
+    "market": "US",
+    "signal": "2026-10-28"
    },
    {
     "port": "C",
     "side": "buy",
-    "ticker": "MRL.MC",
-    "market": "EU",
-    "signal": "2026-10-27"
+    "ticker": "CRNA.OL",
+    "market": "NO",
+    "signal": "2026-10-28"
    },
    {
     "port": "C",
     "side": "buy",
-    "ticker": "ZEAL.CO",
+    "ticker": "SAB.MC",
     "market": "EU",
-    "signal": "2026-10-27"
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "C",
+    "side": "buy",
+    "ticker": "AIR.PA",
+    "market": "EU",
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "C",
+    "side": "buy",
+    "ticker": "GMAB.CO",
+    "market": "EU",
+    "signal": "2026-10-28"
+   },
+   {
+    "port": "C",
+    "side": "buy",
+    "ticker": "BN.PA",
+    "market": "EU",
+    "signal": "2026-10-28"
    }
   ],
   "ports": {
@@ -620,7 +655,7 @@
       "buy_nok": 176.3800048828125,
       "shares": 5.505159162713119,
       "fee_buy": 29.0,
-      "last_nok": 176.3800048828125
+      "last_nok": 178.1999969482422
      },
      {
       "ticker": "INDU-C.ST",
@@ -632,7 +667,7 @@
       "buy_nok": 477.5928748675615,
       "shares": 2.027877824325937,
       "fee_buy": 31.5,
-      "last_nok": 477.5928748675615
+      "last_nok": 484.0599543063872
      },
      {
       "ticker": "BMPS.MI",
@@ -644,7 +679,7 @@
       "buy_nok": 113.13472299255409,
       "shares": 8.383809805787257,
       "fee_buy": 51.5,
-      "last_nok": 113.13472299255409
+      "last_nok": 113.76528902942846
      },
      {
       "ticker": "EVO.ST",
@@ -656,7 +691,7 @@
       "buy_nok": 782.5866206288338,
       "shares": 1.2375626856766075,
       "fee_buy": 31.5,
-      "last_nok": 782.5866206288338
+      "last_nok": 776.520640990042
      },
      {
       "ticker": "LOG.MC",
@@ -668,48 +703,143 @@
       "buy_nok": 385.7859013900452,
       "shares": 2.4586175818826206,
       "fee_buy": 51.5,
-      "last_nok": 385.7859013900452
+      "last_nok": 385.10287962017173
+     },
+     {
+      "ticker": "ELE.MC",
+      "name": "ENDESA,S.A.",
+      "market": "EU",
+      "ccy": "EUR",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 458.8415452799163,
+      "shares": 2.067162421880014,
+      "fee_buy": 51.5,
+      "last_nok": 458.8415452799163
+     },
+     {
+      "ticker": "INVE-B.ST",
+      "name": "Investor AB ser. B",
+      "market": "EU",
+      "ccy": "SEK",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 397.0247444704655,
+      "shares": 2.4393945553487946,
+      "fee_buy": 31.5,
+      "last_nok": 397.0247444704655
+     },
+     {
+      "ticker": "AENA.MC",
+      "name": "AENA, S.M.E., S.A.",
+      "market": "EU",
+      "ccy": "EUR",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 280.41470432281494,
+      "shares": 3.3824902381298863,
+      "fee_buy": 51.5,
+      "last_nok": 280.41470432281494
+     },
+     {
+      "ticker": "ABI.BR",
+      "name": "AB INBEV",
+      "market": "EU",
+      "ccy": "EUR",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 760.443147882208,
+      "shares": 1.2472990290484172,
+      "fee_buy": 51.5,
+      "last_nok": 760.443147882208
+     },
+     {
+      "ticker": "IAG.MC",
+      "name": "INTL CONSOLIDATED AIRLINES GROU",
+      "market": "EU",
+      "ccy": "EUR",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 50.703132516533515,
+      "shares": 18.70693097099491,
+      "fee_buy": 51.5,
+      "last_nok": 50.703132516533515
      }
     ],
     "closed": [],
     "realized": 0.0,
-    "invested": 5000.0,
-    "fees": 195.0,
+    "invested": 10000.0,
+    "fees": 432.5,
     "bench_lots": [
      {
       "ticker": "NONG.OL",
       "market": "NO",
       "units": 0.4702717851739701,
       "buy_date": "2026-10-27",
-      "last_nok": 2126.429931640625
+      "last_nok": 2129.219970703125
      },
      {
       "ticker": "INDU-C.ST",
       "market": "EU",
       "units": 0.14932185773167783,
       "buy_date": "2026-10-27",
-      "last_nok": 6696.943201690796
+      "last_nok": 6689.8641388938995
      },
      {
       "ticker": "BMPS.MI",
       "market": "EU",
       "units": 0.14932185773167783,
       "buy_date": "2026-10-27",
-      "last_nok": 6696.943201690796
+      "last_nok": 6689.8641388938995
      },
      {
       "ticker": "EVO.ST",
       "market": "EU",
       "units": 0.14932185773167783,
       "buy_date": "2026-10-27",
-      "last_nok": 6696.943201690796
+      "last_nok": 6689.8641388938995
      },
      {
       "ticker": "LOG.MC",
       "market": "EU",
       "units": 0.14932185773167783,
       "buy_date": "2026-10-27",
-      "last_nok": 6696.943201690796
+      "last_nok": 6689.8641388938995
+     },
+     {
+      "ticker": "ELE.MC",
+      "market": "EU",
+      "units": 0.14947986674141034,
+      "buy_date": "2026-10-28",
+      "last_nok": 6689.8641388938995
+     },
+     {
+      "ticker": "INVE-B.ST",
+      "market": "EU",
+      "units": 0.14947986674141034,
+      "buy_date": "2026-10-28",
+      "last_nok": 6689.8641388938995
+     },
+     {
+      "ticker": "AENA.MC",
+      "market": "EU",
+      "units": 0.14947986674141034,
+      "buy_date": "2026-10-28",
+      "last_nok": 6689.8641388938995
+     },
+     {
+      "ticker": "ABI.BR",
+      "market": "EU",
+      "units": 0.14947986674141034,
+      "buy_date": "2026-10-28",
+      "last_nok": 6689.8641388938995
+     },
+     {
+      "ticker": "IAG.MC",
+      "market": "EU",
+      "units": 0.14947986674141034,
+      "buy_date": "2026-10-28",
+      "last_nok": 6689.8641388938995
      }
     ],
     "bench_realized": 0.0
@@ -726,7 +856,7 @@
       "buy_nok": 176.3800048828125,
       "shares": 5.505159162713119,
       "fee_buy": 29.0,
-      "last_nok": 176.3800048828125
+      "last_nok": 178.1999969482422
      },
      {
       "ticker": "ALL",
@@ -738,7 +868,7 @@
       "buy_nok": 2343.7498559108935,
       "shares": 0.4046933582130792,
       "fee_buy": 51.5,
-      "last_nok": 2343.7498559108935
+      "last_nok": 2335.3867230710457
      },
      {
       "ticker": "MU",
@@ -750,7 +880,7 @@
       "buy_nok": 8647.972194202244,
       "shares": 0.10967889103943829,
       "fee_buy": 51.5,
-      "last_nok": 8647.972194202244
+      "last_nok": 9177.547042844817
      },
      {
       "ticker": "INDU-C.ST",
@@ -762,7 +892,7 @@
       "buy_nok": 477.5928748675615,
       "shares": 2.027877824325937,
       "fee_buy": 31.5,
-      "last_nok": 477.5928748675615
+      "last_nok": 484.0599543063872
      },
      {
       "ticker": "SNDK",
@@ -774,48 +904,143 @@
       "buy_nok": 12149.769180033356,
       "shares": 0.07806732670763347,
       "fee_buy": 51.5,
-      "last_nok": 12149.769180033356
+      "last_nok": 13112.23538208194
+     },
+     {
+      "ticker": "INCY",
+      "name": "Incyte Corporation",
+      "market": "US",
+      "ccy": "USD",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 1090.8739251348015,
+      "shares": 0.8694863614810409,
+      "fee_buy": 51.5,
+      "last_nok": 1090.8739251348015
+     },
+     {
+      "ticker": "ACGL",
+      "name": "Arch Capital Group Ltd.",
+      "market": "US",
+      "ccy": "USD",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 956.7431735992432,
+      "shares": 0.9913841312624865,
+      "fee_buy": 51.5,
+      "last_nok": 956.7431735992432
+     },
+     {
+      "ticker": "MO",
+      "name": "Altria Group, Inc.",
+      "market": "US",
+      "ccy": "USD",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 681.2944604603399,
+      "shares": 1.3922027185706363,
+      "fee_buy": 51.5,
+      "last_nok": 681.2944604603399
+     },
+     {
+      "ticker": "BMY",
+      "name": "Bristol-Myers Squibb Company",
+      "market": "US",
+      "ccy": "USD",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 565.3652071505494,
+      "shares": 1.6776766380450907,
+      "fee_buy": 51.5,
+      "last_nok": 565.3652071505494
+     },
+     {
+      "ticker": "BMPS.MI",
+      "name": "BANCA MONTE PASCHI SIENA",
+      "market": "EU",
+      "ccy": "EUR",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 113.76528902942846,
+      "shares": 8.337340924389029,
+      "fee_buy": 51.5,
+      "last_nok": 113.76528902942846
      }
     ],
     "closed": [],
     "realized": 0.0,
-    "invested": 5000.0,
-    "fees": 215.0,
+    "invested": 10000.0,
+    "fees": 472.5,
     "bench_lots": [
      {
       "ticker": "NONG.OL",
       "market": "NO",
       "units": 0.4702717851739701,
       "buy_date": "2026-10-27",
-      "last_nok": 2126.429931640625
+      "last_nok": 2129.219970703125
      },
      {
       "ticker": "ALL",
       "market": "US",
       "units": 0.013906750935653684,
       "buy_date": "2026-10-27",
-      "last_nok": 71907.5220824033
+      "last_nok": 72282.92666148953
      },
      {
       "ticker": "MU",
       "market": "US",
       "units": 0.013906750935653684,
       "buy_date": "2026-10-27",
-      "last_nok": 71907.5220824033
+      "last_nok": 72282.92666148953
      },
      {
       "ticker": "INDU-C.ST",
       "market": "EU",
       "units": 0.14932185773167783,
       "buy_date": "2026-10-27",
-      "last_nok": 6696.943201690796
+      "last_nok": 6689.8641388938995
      },
      {
       "ticker": "SNDK",
       "market": "US",
       "units": 0.013906750935653684,
       "buy_date": "2026-10-27",
-      "last_nok": 71907.5220824033
+      "last_nok": 72282.92666148953
+     },
+     {
+      "ticker": "INCY",
+      "market": "US",
+      "units": 0.013834525609112809,
+      "buy_date": "2026-10-28",
+      "last_nok": 72282.92666148953
+     },
+     {
+      "ticker": "ACGL",
+      "market": "US",
+      "units": 0.013834525609112809,
+      "buy_date": "2026-10-28",
+      "last_nok": 72282.92666148953
+     },
+     {
+      "ticker": "MO",
+      "market": "US",
+      "units": 0.013834525609112809,
+      "buy_date": "2026-10-28",
+      "last_nok": 72282.92666148953
+     },
+     {
+      "ticker": "BMY",
+      "market": "US",
+      "units": 0.013834525609112809,
+      "buy_date": "2026-10-28",
+      "last_nok": 72282.92666148953
+     },
+     {
+      "ticker": "BMPS.MI",
+      "market": "EU",
+      "units": 0.14947986674141034,
+      "buy_date": "2026-10-28",
+      "last_nok": 6689.8641388938995
      }
     ],
     "bench_realized": 0.0
@@ -832,7 +1057,7 @@
       "buy_nok": 439.99151341246034,
       "shares": 2.1557233971257297,
       "fee_buy": 51.5,
-      "last_nok": 439.99151341246034
+      "last_nok": 434.8504952030016
      },
      {
       "ticker": "PLT.OL",
@@ -856,7 +1081,7 @@
       "buy_nok": 469.5393010260086,
       "shares": 2.0200651956660405,
       "fee_buy": 51.5,
-      "last_nok": 469.5393010260086
+      "last_nok": 468.60411701963676
      },
      {
       "ticker": "IDR.MC",
@@ -868,7 +1093,7 @@
       "buy_nok": 649.2189764467621,
       "shares": 1.4609862533458768,
       "fee_buy": 51.5,
-      "last_nok": 649.2189764467621
+      "last_nok": 656.5858499848691
      },
      {
       "ticker": "AUTO.OL",
@@ -880,48 +1105,143 @@
       "buy_nok": 14.800000190734863,
       "shares": 65.60810726258423,
       "fee_buy": 29.0,
-      "last_nok": 14.800000190734863
+      "last_nok": 15.069999694824219
+     },
+     {
+      "ticker": "COL.MC",
+      "name": "COLONIAL SFL, SOCIMI. S.A.",
+      "market": "EU",
+      "ccy": "EUR",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 53.43457957008877,
+      "shares": 17.750677700305975,
+      "fee_buy": 51.5,
+      "last_nok": 53.43457957008877
+     },
+     {
+      "ticker": "MONC.MI",
+      "name": "MONCLER",
+      "market": "EU",
+      "ccy": "EUR",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 437.4469276504351,
+      "shares": 2.1682630281448647,
+      "fee_buy": 51.5,
+      "last_nok": 437.4469276504351
+     },
+     {
+      "ticker": "AFK.OL",
+      "name": "ARENDALS FOSSEKOMPANI",
+      "market": "NO",
+      "ccy": "NOK",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 184.0,
+      "shares": 5.2771739130434785,
+      "fee_buy": 29.0,
+      "last_nok": 184.0
+     },
+     {
+      "ticker": "MRL.MC",
+      "name": "MERLIN PROPERTIES SOCIMI, S.A.",
+      "market": "EU",
+      "ccy": "EUR",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 119.64361193194418,
+      "shares": 7.927711180597982,
+      "fee_buy": 51.5,
+      "last_nok": 119.64361193194418
+     },
+     {
+      "ticker": "ZEAL.CO",
+      "name": "Zealand Pharma A/S",
+      "market": "EU",
+      "ccy": "DKK",
+      "signal": "2026-10-27",
+      "buy_date": "2026-10-28",
+      "buy_nok": 314.0249574184418,
+      "shares": 3.084149769374741,
+      "fee_buy": 31.5,
+      "last_nok": 314.0249574184418
      }
     ],
     "closed": [],
     "realized": 0.0,
-    "invested": 5000.0,
-    "fees": 212.5,
+    "invested": 10000.0,
+    "fees": 427.5,
     "bench_lots": [
      {
       "ticker": "SHL.DE",
       "market": "EU",
       "units": 0.14932185773167783,
       "buy_date": "2026-10-27",
-      "last_nok": 6696.943201690796
+      "last_nok": 6689.8641388938995
      },
      {
       "ticker": "PLT.OL",
       "market": "NO",
       "units": 0.4702717851739701,
       "buy_date": "2026-10-27",
-      "last_nok": 2126.429931640625
+      "last_nok": 2129.219970703125
      },
      {
       "ticker": "AC.PA",
       "market": "EU",
       "units": 0.14932185773167783,
       "buy_date": "2026-10-27",
-      "last_nok": 6696.943201690796
+      "last_nok": 6689.8641388938995
      },
      {
       "ticker": "IDR.MC",
       "market": "EU",
       "units": 0.14932185773167783,
       "buy_date": "2026-10-27",
-      "last_nok": 6696.943201690796
+      "last_nok": 6689.8641388938995
      },
      {
       "ticker": "AUTO.OL",
       "market": "NO",
       "units": 0.4702717851739701,
       "buy_date": "2026-10-27",
-      "last_nok": 2126.429931640625
+      "last_nok": 2129.219970703125
+     },
+     {
+      "ticker": "COL.MC",
+      "market": "EU",
+      "units": 0.14947986674141034,
+      "buy_date": "2026-10-28",
+      "last_nok": 6689.8641388938995
+     },
+     {
+      "ticker": "MONC.MI",
+      "market": "EU",
+      "units": 0.14947986674141034,
+      "buy_date": "2026-10-28",
+      "last_nok": 6689.8641388938995
+     },
+     {
+      "ticker": "AFK.OL",
+      "market": "NO",
+      "units": 0.469655561078442,
+      "buy_date": "2026-10-28",
+      "last_nok": 2129.219970703125
+     },
+     {
+      "ticker": "MRL.MC",
+      "market": "EU",
+      "units": 0.14947986674141034,
+      "buy_date": "2026-10-28",
+      "last_nok": 6689.8641388938995
+     },
+     {
+      "ticker": "ZEAL.CO",
+      "market": "EU",
+      "units": 0.14947986674141034,
+      "buy_date": "2026-10-28",
+      "last_nok": 6689.8641388938995
      }
     ],
     "bench_realized": 0.0
@@ -974,6 +1294,30 @@
      "bench": 5000.0,
      "fees": 212.5,
      "open": 5
+    }
+   },
+   {
+    "date": "2026-10-28",
+    "A": {
+     "invested": 10000.0,
+     "value": 9586.73,
+     "bench": 9997.08,
+     "fees": 432.5,
+     "open": 10
+    },
+    "B": {
+     "invested": 10000.0,
+     "value": 9680.47,
+     "bench": 10015.92,
+     "fees": 472.5,
+     "open": 10
+    },
+    "C": {
+     "invested": 10000.0,
+     "value": 9588.01,
+     "bench": 9999.45,
+     "fees": 427.5,
+     "open": 10
     }
    }
   ]
